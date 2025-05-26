@@ -16,6 +16,11 @@ set(CTEST_OUTPUT_ON_FAILURE ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+
+# Find the installed sha1_lib
+find_package(sha1_lib REQUIRED PATHS /usr/local/lib/sha1_lib)
+
+
 add_executable(nit
   src/main.cpp
 )
@@ -59,5 +64,7 @@ FetchContent_MakeAvailable(googletest)
 
 # include(GoogleTest)
 # gtest_discover_tests(nit_tests)
+
+target_link_libraries(nit PRIVATE sha1_lib)
 
 install(TARGETS nit DESTINATION bin)
