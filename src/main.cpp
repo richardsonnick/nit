@@ -3,8 +3,8 @@
 
 using namespace std;
 int main(){
-    std::string path = "foo/bar/test.txt";
-    std::string r = hashObject(path);
+    std::string path = "../test/assets/bee_movie.txt";
+    std::string r = hash_object(path);
     cout << r << endl;
     return 0;
 }
