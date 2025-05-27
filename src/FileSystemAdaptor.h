@@ -8,11 +8,13 @@
 #include <types.h>
 
 class FileSystemAdaptorInterface {
+    public:
     virtual void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) = 0;
     virtual nit::Blob getBlobFromFile(const std::filesystem::path& path) = 0;
 };
 
 class FileSystemAdaptorImpl : FileSystemAdaptorInterface {
+    public:
     void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) {
         std::ofstream out(path, std::ios::binary);
         if (!out) {
@@ -27,6 +29,7 @@ class FileSystemAdaptorImpl : FileSystemAdaptorInterface {
             throw std::runtime_error("Failed to open file for read: " + path.string());
        }
 
+       in.seekg(0, std::ios::end);
        std::streamsize size = in.tellg(); // Gets the file size in bytes
        in.seekg(0, std::ios::beg);
 
