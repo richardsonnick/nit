@@ -1,6 +1,6 @@
 # nit
 A git-like with zero third-party dependencies. 
-  - All crypto done with my very own 🕺🏾boogie🕺🏾!
+  - All crypto done with my very own 🕺🏾[boogie](https://github.com/NickR23/boogie)🕺🏾!
 
 ## Features
 | Feature            | Status     |
