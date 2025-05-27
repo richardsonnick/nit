@@ -7,13 +7,15 @@
 
 #include <types.h>
 
+#pragma once
+
 class FileSystemAdaptorInterface {
     public:
     virtual void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) = 0;
     virtual nit::Blob getBlobFromFile(const std::filesystem::path& path) = 0;
 };
 
-class FileSystemAdaptorImpl : FileSystemAdaptorInterface {
+class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     public:
     void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) {
         std::ofstream out(path, std::ios::binary);
