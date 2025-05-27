@@ -2,5 +2,5 @@
 
 static std::string hashObject(std::string& path) {
     std::string s = "abc";
-    return hash::sha1::hash(s);
+    return hash::sha1::hash_string(s);
 }

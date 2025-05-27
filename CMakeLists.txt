@@ -17,7 +17,7 @@ set(CTEST_OUTPUT_ON_FAILURE ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 
-find_package(boogie_lib REQUIRED PATHS /usr/local/lib/boogie_lib)
+find_package(boogielib REQUIRED PATHS /usr/local/lib/boogielib)
 
 
 add_executable(nit
@@ -64,6 +64,6 @@ FetchContent_MakeAvailable(googletest)
 # include(GoogleTest)
 # gtest_discover_tests(nit_tests)
 
-target_link_libraries(nit PRIVATE boogie_lib)
+target_link_libraries(nit PRIVATE boogielib)
 
 install(TARGETS nit DESTINATION bin)
