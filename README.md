@@ -7,6 +7,9 @@ A git-like with zero third-party dependencies.
 |--------------------|------------|
 | git-hash           | WIP        |
 
+## Dependencies
+- boogie: https://github.com/NickR23/boogie
+  - Requires boogielib installed (follow install guide)
 
 ## Building
 
