@@ -1,7 +1,8 @@
 #include <FileSystemAdaptor.h>
 #include <types.h>
 
-class MockFileSystemAdaptor : FileSystemAdaptorInterface {
+class MockFileSystemAdaptor : public FileSystemAdaptorInterface {
+    public:
     std::unordered_map<std::string, nit::Blob> filesytemTree; 
 
     void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) {
