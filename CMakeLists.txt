@@ -51,6 +51,7 @@ add_executable(nit_tests
 target_include_directories(nit_tests
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/mocks
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
