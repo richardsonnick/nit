@@ -48,6 +48,7 @@ add_executable(nit_tests
   test/FileSystemAdaptorTest.cpp
   test/ObjectStoreTest.cpp
   test/TreeTest.cpp
+  test/CommitTest.cpp
 )
 
 target_include_directories(nit_tests
