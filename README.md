@@ -3,6 +3,7 @@ A git-like with zero third-party dependencies.
   - All crypto done with my very own 🕺🏾[boogie](https://github.com/NickR23/boogie)🕺🏾!
 
 ## Features
+The CLI is still a WIP so this currently doesn't do much beside the unit tests as I work out some primitives.
 | Feature            | Status     |
 |--------------------|------------|
 | git-hash           | WIP        |
