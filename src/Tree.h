@@ -70,6 +70,14 @@ public:
         return hash;
     }
 
+    std::string getName() const {
+        return name;
+    }
+
+    std::string getMode() const {
+        return mode;
+    }
+
     std::vector<Tree> getChildren() const {
         return children;
     }
