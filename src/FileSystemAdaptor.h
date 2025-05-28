@@ -6,19 +6,29 @@
 #include <fstream>
 
 #include <types.h>
+#include <Tree.h>
 
 #pragma once
+namespace fs = std::filesystem;
 
 class FileSystemAdaptorInterface {
     public:
     virtual ~FileSystemAdaptorInterface() = default;
-    virtual void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) = 0;
-    virtual nit::Blob getBlobFromFile(const std::filesystem::path& path) = 0;
+    virtual void writeBlobToFile(const fs::path& path, const nit::Blob& blob) = 0;
+    virtual nit::Blob getBlobFromFile(const fs::path& path) = 0;
+    virtual nit::Tree getTreeFromPath(const fs::path& path) = 0;
+};
+
+class FSNode {
+    std::string path;
+    bool isDirectory;
+    std::shared_ptr<FSNode> parent;
+    std::vector<std::shared_ptr<FSNode>> children;
 };
 
 class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     public:
-    void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) {
+    void writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
         std::ofstream out(path, std::ios::binary);
         if (!out) {
             throw std::runtime_error("Failed to open file for write: " + path.string());
@@ -26,7 +36,7 @@ class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
         out.write(reinterpret_cast<const char*>(blob.data()), blob.size());
     }
 
-    nit::Blob getBlobFromFile(const std::filesystem::path& path) {
+    nit::Blob getBlobFromFile(const fs::path& path) {
        std::ifstream in(path, std::ios::binary);
        if (!in) {
             throw std::runtime_error("Failed to open file for read: " + path.string());
@@ -43,4 +53,9 @@ class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
 
        return buffer;
     }
+
+    nit::Tree getTreeFromPath(const fs::path& path) {
+        throw std::runtime_error("Not implemented");
+        return {};
+    } 
 };
