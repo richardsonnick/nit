@@ -9,7 +9,7 @@ TEST(ObjectHashTests, TestHashBlob) {
     const std::string bee_movie_path = current_dir + "/assets/bee_movie.txt";
     FileSystemAdaptorImpl fs;
     nit::Blob blob = fs.getBlobFromFile(bee_movie_path);
-    auto r = nit::hashBlob(blob);
+    auto r = nit::hashObject(blob);
     EXPECT_EQ(r, "93ae3d6436613af8a6957db81e1701fbc50de7a8");
 }
 
