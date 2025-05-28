@@ -25,6 +25,10 @@ public:
             updateHash();
         }
 
+    bool operator==(const Tree& other) const {
+        return name == other.name && mode == other.mode && hash == other.hash;
+    }
+
     bool isDir() const {
         return mode == DIRMODE;
     }
@@ -56,12 +60,18 @@ public:
      * Adds child to tree and recomputes the hash.
      */
     void addChild(const Tree& childTree) {
-        children.push_back(childTree);
-        updateHash();
+        if (isDir()) {
+            children.push_back(childTree);
+            updateHash();
+        }
     }
 
     std::string getHash() const {
         return hash;
+    }
+
+    std::vector<Tree> getChildren() const {
+        return children;
     }
 
 private:
