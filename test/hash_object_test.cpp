@@ -20,19 +20,3 @@ TEST(ObjectHashTests, TestHashToFSPath) {
     const std::filesystem::path gotPath = nit::hashToFSPath(objectStorePath, hash);
     EXPECT_EQ(gotPath, expected);
 }
-
-TEST(ObjectHashTests, TestPutObject) {
-    MockFileSystemAdaptor mockFs;
-    const std::string data = "hello world";
-    const nit::Blob blob(data.begin(), data.end());
-
-    const std::filesystem::path objectStorePath("/Users/snoopy/code/doghouse/.nit/objects");
-    const std::string hash = "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed";
-    const std::filesystem::path expectedObjectPath = objectStorePath / hash.substr(0, 2) / hash.substr(2);
-
-    auto gotPath = nit::putObject(mockFs, objectStorePath, blob);
-    EXPECT_EQ(gotPath, expectedObjectPath);
-
-    auto gotBlob = mockFs.getBlobFromFile(gotPath);
-    EXPECT_EQ(blob, gotBlob);
-}

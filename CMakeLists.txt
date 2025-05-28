@@ -46,6 +46,7 @@ enable_testing()
 add_executable(nit_tests
   test/hash_object_test.cpp
   test/FileSystemAdaptorTest.cpp
+  test/ObjectStoreTest.cpp
 )
 
 target_include_directories(nit_tests
