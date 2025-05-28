@@ -11,6 +11,7 @@
 
 class FileSystemAdaptorInterface {
     public:
+    virtual ~FileSystemAdaptorInterface() = default;
     virtual void writeBlobToFile(const std::filesystem::path& path, const nit::Blob& blob) = 0;
     virtual nit::Blob getBlobFromFile(const std::filesystem::path& path) = 0;
 };
