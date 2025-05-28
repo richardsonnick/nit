@@ -63,8 +63,7 @@ public:
 
         /**
          * Trees in git do not serialize their name and mode!!!!
-         * The name and mode is only serialized by the parent tree.
-         * Also only the children are serialized!
+         * The children are serialized!
          * Weird!
          */
         for (const auto& child : children) {
