@@ -7,7 +7,9 @@ namespace nit {
  */
 class Tree {
 public:
-    Tree(const std::string& name, const std::string& mode, const std::string hash) : name(name), mode(mode), hash(hash) {};
+    Tree() = default;
+    Tree(const std::string& name, const std::string& mode, const std::string& hash)
+        : name(name), mode(mode), hash(hash) {}
 private:
     std::string name;
     std::string mode; // Modes: "100644" (normal file), "40000" (directory)
