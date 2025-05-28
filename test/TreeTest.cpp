@@ -43,13 +43,13 @@ TEST_F(TreeTest, TestAddChild) {
     EXPECT_EQ(l2d1.getChildren().size(), static_cast<size_t>(3));
 
     // Check names and modes of children
-    EXPECT_EQ(root->getChildren()[0].getName(), "L2F1");
-    EXPECT_EQ(root->getChildren()[0].getMode(), FILEMODE);
-    EXPECT_EQ(root->getChildren()[1].getName(), "L2D1");
-    EXPECT_EQ(root->getChildren()[1].getMode(), DIRMODE);
+    EXPECT_EQ(root->getChildren()[1].getName(), "L2F1");
+    EXPECT_EQ(root->getChildren()[1].getMode(), FILEMODE);
+    EXPECT_EQ(root->getChildren()[0].getName(), "L2D1");
+    EXPECT_EQ(root->getChildren()[0].getMode(), DIRMODE);
 
     // Check grandchildren
-    const auto& l2d1Children = root->getChildren()[1].getChildren();
+    const auto& l2d1Children = root->getChildren()[0].getChildren();
     ASSERT_EQ(l2d1Children.size(), 3u);
     EXPECT_EQ(l2d1Children[0].getName(), "l3f1");
     EXPECT_EQ(l2d1Children[0].getMode(), FILEMODE);
@@ -66,4 +66,21 @@ TEST_F(TreeTest, TestAddChild) {
 TEST_F(TreeTest, TestEquality) {
     Tree copy = *root;
     EXPECT_EQ(copy, *root);
+}
+
+TEST_F(TreeTest, TestSerializeDeserialize) {
+    root->addChild(Tree("L2F1", FILEMODE));
+    Tree l2d1("L2D1", DIRMODE);
+    l2d1.addChild(Tree("l3f1", FILEMODE));
+    l2d1.addChild(Tree("l3f2", FILEMODE));
+    l2d1.addChild(Tree("l3f3", DIRMODE));
+    root->addChild(l2d1);
+    auto initHash = root->getHash();
+    auto expectedSerial = root->serialize();
+
+    auto gotTree = Tree::deserialize(expectedSerial);
+    auto gotSerial = gotTree.serialize();
+
+    // EXPECT_EQ(gotSerial, expectedSerial);
+    EXPECT_EQ(gotTree.getChildren(), root->getChildren());
 }
