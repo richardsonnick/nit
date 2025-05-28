@@ -60,10 +60,8 @@ public:
      * Adds child to tree and recomputes the hash.
      */
     void addChild(const Tree& childTree) {
-        if (isDir()) {
-            children.push_back(childTree);
-            updateHash();
-        }
+        children.push_back(childTree);
+        updateHash();
     }
 
     std::string getHash() const {
