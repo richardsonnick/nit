@@ -49,6 +49,7 @@ add_executable(nit_tests
   test/ObjectStoreTest.cpp
   test/TreeTest.cpp
   test/CommitTest.cpp
+  test/IndexTest.cpp
 )
 
 target_include_directories(nit_tests
