@@ -29,6 +29,7 @@ std::string committerToString(const Committer& c) {
 class Commit {
 public:
     Commit() = default;
+    Commit(std::string treeHash) : treeHash(treeHash) {} ;
     Commit(std::string treeHash, std::string parentHash, std::string author,
         Committer committer, std::string commitMessage, std::string hash) :
             treeHash(treeHash), parentHash(parentHash), author(author), committer(committer),
@@ -53,6 +54,16 @@ public:
                 committerEqual(this->committer, other.committer) &&
                 commitMessage == other.commitMessage &&
                 hash == other.hash;
+    }
+
+    /**
+     * Returns a "blank" commit with only the treeHash.
+     * Caller is responsible for filling out the rest of the commit
+     * and updating it's hash before "committing".
+     */
+    static Commit fromTree(const Tree& tree) {
+        auto treeHash = tree.getHash(); // TODO we should have a notion for a "stale" hash
+        return Commit(treeHash);
     }
 
     static std::string header(const Commit& c) {
