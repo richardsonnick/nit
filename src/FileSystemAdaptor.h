@@ -24,13 +24,6 @@ class FileSystemAdaptorInterface {
     virtual nit::Tree getTreeFromPath(const fs::path& path) = 0;
 };
 
-class FSNode {
-    std::string path;
-    bool isDirectory;
-    std::shared_ptr<FSNode> parent;
-    std::vector<std::shared_ptr<FSNode>> children;
-};
-
 class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     public:
     void writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
