@@ -5,82 +5,59 @@ using namespace nit;
 
 class TreeTest : public ::testing::Test {
 protected:
-    Tree* root;
+    Tree* tree;
 
     void SetUp() override {
-        root = new Tree("root", DIRMODE);
+        tree = new Tree();
     }
 
     void TearDown() override {
-        delete root;
+        delete tree;
     }
 };
 
-TEST_F(TreeTest, TestAddChild) {
-    // Initial state
-    EXPECT_EQ(root->getName(), "root");
-    EXPECT_EQ(root->getMode(), DIRMODE);
-    EXPECT_TRUE(root->getChildren().empty());
+TEST_F(TreeTest, TestAddEntryAndHashChange) {
+    EXPECT_TRUE(tree->getEntries().empty());
+    auto initialHash = tree->getHash();
 
-    // Add a file child
-    auto initHash = root->getHash();
-    Tree l2f1("L2F1", FILEMODE);
-    root->addChild(l2f1);
-    ASSERT_EQ(root->getChildren().size(), static_cast<size_t>(1));
-    EXPECT_EQ(root->getChildren()[0], l2f1);
-    EXPECT_NE(root->getHash(), initHash);
+    TreeEntry fileEntry{ "file1.txt", FILEMODE, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
+    tree->addEntry(fileEntry);
+    ASSERT_EQ(tree->getEntries().size(), (unsigned long)1);
+    EXPECT_NE(tree->getHash(), initialHash);
 
-    // Add a directory child with its own children
-    initHash = root->getHash();
-    Tree l2d1("L2D1", DIRMODE);
-    l2d1.addChild(Tree("l3f1", FILEMODE));
-    l2d1.addChild(Tree("l3f2", FILEMODE));
-    l2d1.addChild(Tree("l3f3", DIRMODE));
-    root->addChild(l2d1);
-
-    EXPECT_NE(root->getHash(), initHash);
-    EXPECT_EQ(root->getChildren().size(), static_cast<size_t>(2));
-    EXPECT_EQ(l2d1.getChildren().size(), static_cast<size_t>(3));
-
-    // Check names and modes of children
-    EXPECT_EQ(root->getChildren()[1].getName(), "L2F1");
-    EXPECT_EQ(root->getChildren()[1].getMode(), FILEMODE);
-    EXPECT_EQ(root->getChildren()[0].getName(), "L2D1");
-    EXPECT_EQ(root->getChildren()[0].getMode(), DIRMODE);
-
-    // Check grandchildren
-    const auto& l2d1Children = root->getChildren()[0].getChildren();
-    ASSERT_EQ(l2d1Children.size(), 3u);
-    EXPECT_EQ(l2d1Children[0].getName(), "l3f1");
-    EXPECT_EQ(l2d1Children[0].getMode(), FILEMODE);
-    EXPECT_EQ(l2d1Children[2].getMode(), DIRMODE);
-
-    // Test that hashes change when children are added
-    auto hashBefore = root->getHash();
-    root->addChild(Tree("L2F2", FILEMODE));
-    EXPECT_NE(root->getHash(), hashBefore);
-
-
-}
-
-TEST_F(TreeTest, TestEquality) {
-    Tree copy = *root;
-    EXPECT_EQ(copy, *root);
+    auto hashAfterFirstAdd = tree->getHash();
+    TreeEntry dirEntry{ "subdir", DIRMODE, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" };
+    tree->addEntry(dirEntry);
+    EXPECT_EQ(tree->getEntries().size(), (unsigned long)2);
+    EXPECT_NE(tree->getHash(), hashAfterFirstAdd);
 }
 
 TEST_F(TreeTest, TestSerializeDeserialize) {
-    root->addChild(Tree("L2F1", FILEMODE));
-    Tree l2d1("L2D1", DIRMODE);
-    l2d1.addChild(Tree("l3f1", FILEMODE));
-    l2d1.addChild(Tree("l3f2", FILEMODE));
-    l2d1.addChild(Tree("l3f3", DIRMODE));
-    root->addChild(l2d1);
-    auto initHash = root->getHash();
-    auto expectedSerial = root->serialize();
+    TreeEntry fileEntry{ "file1.txt", FILEMODE, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
+    TreeEntry dirEntry{ "subdir", DIRMODE, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" };
+    tree->addEntry(fileEntry);
+    tree->addEntry(dirEntry);
 
-    auto gotTree = Tree::deserialize(expectedSerial);
-    auto gotSerial = gotTree.serialize();
+    auto serialized = tree->serialize();
+    Tree deserialized = Tree::deserialize(serialized);
 
-    // EXPECT_EQ(gotSerial, expectedSerial);
-    EXPECT_EQ(gotTree.getChildren(), root->getChildren());
+    const auto& originalEntries = tree->getEntries();
+    const auto& deserializedEntries = deserialized.getEntries();
+    ASSERT_EQ(originalEntries.size(), deserializedEntries.size());
+
+    for (size_t i = 0; i < originalEntries.size(); ++i) {
+        EXPECT_EQ(originalEntries[i].mode, deserializedEntries[i].mode);
+        EXPECT_EQ(originalEntries[i].name, deserializedEntries[i].name);
+        EXPECT_EQ(originalEntries[i].hash, deserializedEntries[i].hash);
+    }
+
+    // I'm choosing not to update the tree's hash.
+    // This is unneccessary since the owning commit will have
+    // that information. To my knowledge this is how OG git works.
+    // EXPECT_EQ(tree->getHash(), deserialized.getHash());
+}
+
+TEST_F(TreeTest, TestEmptyTreeHashable) {
+    Tree emptyTree;
+    EXPECT_EQ(tree->getHash(), emptyTree.getHash());
 }

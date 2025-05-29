@@ -1,13 +1,9 @@
 #include <vector>
-#include <algorithm>
-#include <filesystem>
 
-#include <hash-object.h>
 #include <types.h>
+#include <hash-object.h>
 
 #pragma once
-
-namespace fs = std::filesystem;
 
 namespace nit {
 
@@ -16,135 +12,79 @@ std::string hashObject(const nit::Blob& obj);
 constexpr std::string DIRMODE = "40000";
 constexpr std::string FILEMODE = "100644";
 
+
+struct TreeEntry {
+    std::string name;
+    std::string mode;  // DIRMODE or FILEMODE. TODO maybe make this an enum?
+    std::string hash; // blob hash for files and tree hash for directories
+};
+
 /** 
  * Trees represent a snapshot of a tree of directories.
  */
 class Tree {
 public:
     Tree() = default;
-    Tree(const std::string& name, const std::string& mode, const std::string& hash)
-        : name(name), mode(mode), hash(hash) {};
-    Tree(const std::string& name, const std::string& mode)
-        : name(name), mode(mode) {
-            updateHash();
-        }
 
-    bool operator==(const Tree& other) const {
-        return name == other.name && mode == other.mode && hash == other.hash;
-    }
-
-    bool isDir() const {
-        return mode == DIRMODE;
-    }
-
-    static std::string header(Tree t) {
-        return t.name + " " + t.mode;
-    }
-
-    static void sortChildren(std::vector<Tree>& children) {
-        std::sort(children.begin(), children.end(), [](const Tree& a, const Tree& b) {
-            return a.getName() < b.getName();
-        });
+    void addEntry(const TreeEntry& entry) {
+        entries.push_back(entry);
+        updateHash();
     }
 
     // Returns the serialization of the Tree's contents
-    Blob serialize() {
-        //TODO think about how this eagerly sorts children feels inefficient.
-        sortChildren(children);
-
+    Blob serialize() const {
         Blob data;
-        auto addSerial = [&data](Tree t) {
-            // Surprisingly git does not hash the blob data along with the object headers :o
-            auto header = Tree::header(t);
-            data.insert(data.end(), header.begin(), header.end());
+        for (const auto& entry : entries) {
+            std::string line = entry.mode + " " + entry.name;
+            data.insert(data.end(), line.begin(), line.end());
             data.push_back('\0');
-            data.insert(data.end(), t.hash.begin(), t.hash.end());
-        };
-
-        /**
-         * Trees in git do not serialize their name and mode!!!!
-         * The children are serialized!
-         * Weird!
-         */
-        for (const auto& child : children) {
-            addSerial(child);
+            data.insert(data.end(), entry.hash.begin(), entry.hash.end());
         }
-
         return data;
+    }
+
+    void updateHash() {
+        hash = nit::hashObject(serialize());
     }
 
     static Tree deserialize(const Blob& data) {
         Tree tree;
-        size_t pos = 0;
-        const size_t dataSize = data.size();
-
+        size_t pos = 0, dataSize = data.size();
         while (pos < dataSize) {
-            // Parse mode (until space)
-            size_t modeEnd = pos;
-            while (modeEnd < dataSize && data[modeEnd] != ' ') {
-                modeEnd++;
-            }
-            if (modeEnd == dataSize) throw std::runtime_error("Invalid tree serialization (mode)");
-            std::string mode(reinterpret_cast<const char*>(&data[pos]), modeEnd - pos);
-            pos = modeEnd + 1;
+            size_t spacePos = pos;
+            while (data[spacePos] != ' ') spacePos++;
+            std::string name(data.begin() + pos, data.begin() + spacePos);
+            pos = spacePos + 1;
 
-            // Parse name (until \0)
-            size_t nameEnd = pos;
-            while (nameEnd < dataSize && data[nameEnd] != '\0') {
-                nameEnd++;
-            }
-            if (nameEnd == dataSize) throw std::runtime_error("Invalid tree serialization (name)");
-            std::string name(reinterpret_cast<const char*>(&data[pos]), nameEnd - pos);
-            pos = nameEnd + 1;
+            size_t nullPos = pos;
+            while (data[nullPos] != '\0') nullPos++;
+            std::string mode(data.begin() + pos, data.begin() + nullPos);
+            pos = nullPos + 1;
 
-            // Read 40-char (sha1 len) hash
-            if (pos + 40 > dataSize) throw std::runtime_error("Invalid tree serialization (hash)");
-            std::string hash(reinterpret_cast<const char*>(&data[pos]), 40);
+            std::string hash(data.begin() + pos, data.begin() + pos + 40);
             pos += 40;
 
-            // Add to entries
-            tree.children.push_back(Tree(mode, name, hash));
+            tree.entries.push_back({mode, name, hash});
         }
 
-        sortChildren(tree.children);
+        // I'm choosing not to update the tree's hash.
+        // This is unneccessary since the owning commit will have
+        // that information. To my knowledge this is how OG git works.
+        // tree.updateHash();
         return tree;
     }
 
-    void updateHash() {
-        Blob serialization = serialize();
-        hash = nit::hashObject(serialization);
+    const std::vector<TreeEntry>& getEntries() const {
+        return entries;
     }
 
-    /**
-     * Adds child to tree and recomputes the hash.
-     */
-    void addChild(const Tree& childTree) {
-        children.push_back(childTree);
-        updateHash();
-    }
-
-    std::string getHash() const {
+    const std::string& getHash() const {
         return hash;
     }
 
-    std::string getName() const {
-        return name;
-    }
-
-    std::string getMode() const {
-        return mode;
-    }
-
-    std::vector<Tree> getChildren() const {
-        return children;
-    }
-
 private:
-    std::string name;
-    std::string mode; // Modes: "100644" (normal file), "40000" (directory)
+    std::vector<TreeEntry> entries;
     std::string hash;
-
-    std::vector<Tree> children;
 };
 
 }
