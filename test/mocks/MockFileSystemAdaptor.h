@@ -1,4 +1,5 @@
 #include <FileSystemAdaptor.h>
+#include <unordered_map>
 
 namespace fs = std::filesystem;
 
