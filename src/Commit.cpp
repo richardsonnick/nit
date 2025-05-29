@@ -1,9 +1,7 @@
-#include <Commit.h>
 #include <sstream>
 
 #include <hash-object.h>
-
-namespace fs = std::filesystem;
+#include <Commit.h>
 
 namespace nit {
 
