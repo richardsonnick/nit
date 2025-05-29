@@ -12,7 +12,7 @@ void MockFileSystemAdaptor::writeBlobToFile(const fs::path& path, const nit::Blo
     std::string hash = nit::hashObject(blob);
 
     // Add to fsTree as an entry
-    nit::TreeEntry entry{ path.string(), mode, hash };
+    nit::TreeEntry entry{path.string(), mode, hash};
     fsTree.addEntry(entry);
 }
 
@@ -45,4 +45,9 @@ nit::Tree MockFileSystemAdaptor::getTreeFromPath(const fs::path& path) {
     }
 
     return subTree;
+}
+
+void MockFileSystemAdaptor::createDirectory(const fs::path& path) {
+    nit::TreeEntry entry{path.string(), nit::DIRMODE, ""};
+    fsTree.addEntry(entry);
 }

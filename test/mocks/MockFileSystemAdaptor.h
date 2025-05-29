@@ -13,4 +13,6 @@ public:
     void writeBlobToFile(const fs::path& path, const nit::Blob& blob) override;
     nit::Blob getBlobFromFile(const fs::path& path) override;
     nit::Tree getTreeFromPath(const fs::path& path) override;
+
+    void createDirectory(const fs::path& path) override;
 };

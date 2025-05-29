@@ -20,6 +20,8 @@ class FileSystemAdaptorInterface {
      * Recursively builds a Tree from path.
      */
     virtual nit::Tree getTreeFromPath(const fs::path& path) = 0;
+
+    virtual void createDirectory(const fs::path& path) = 0;
 };
 
 class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
@@ -27,4 +29,5 @@ class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     void writeBlobToFile(const fs::path& path, const nit::Blob& blob) override;
     nit::Blob getBlobFromFile(const fs::path& path) override;
     nit::Tree getTreeFromPath(const fs::path& path) override;
+    void createDirectory(const fs::path& path) override;
 };

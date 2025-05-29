@@ -33,3 +33,7 @@ nit::Tree FileSystemAdaptorImpl::getTreeFromPath(const fs::path& path) {
     throw std::runtime_error("Not implemented");
     return {};
 } 
+
+void FileSystemAdaptorImpl::createDirectory(const fs::path& path) {
+    throw std::runtime_error("Not implemented");
+} 
