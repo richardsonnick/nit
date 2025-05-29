@@ -28,6 +28,7 @@ target_sources(nitlib INTERFACE
   src/FileSystemAdaptorImpl.cpp
   src/Commit.cpp
   src/Tree.cpp
+  src/ObjectStore.cpp
 )
 
 ## EXECUTABLE SETUP
