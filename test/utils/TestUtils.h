@@ -25,12 +25,12 @@ int main() {
 std::cout << "Hello World!" << std::endl;
 return 0;
 })";
-    nit::Blob mainCppContent(mainCppContentStr.begin(), mainCppContentStr.end());
+    std::vector<uint8_t> mainCppContent(mainCppContentStr.begin(), mainCppContentStr.end());
 
     std::string headerContentStr = R"(#pragma once
 void function();
 )";
-    nit::Blob headerContent(headerContentStr.begin(), headerContentStr.end());
+    std::vector<uint8_t> headerContent(headerContentStr.begin(), headerContentStr.end());
 
     fsa->writeBlobToFile(mainCppPath, mainCppContent);
     fsa->writeBlobToFile(headerPath, headerContent);

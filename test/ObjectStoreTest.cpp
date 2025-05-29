@@ -16,7 +16,7 @@ TEST(ObjectHashTests, TestPutObject) {
     const std::filesystem::path expectedObjectPath = objectStorePath / "2a" / "ae6c35c94fcfb415dbe95f408b9ce91ee846ed";
 
     const std::string data = "hello world";
-    const Blob blob(data.begin(), data.end());
+    const std::vector<uint8_t> blob(data.begin(), data.end());
     auto gotPath = objectStore.putObject(blob);
     EXPECT_EQ(gotPath, expectedObjectPath);
 
@@ -32,7 +32,7 @@ TEST(ObjectHashTests, TestGetObject) {
     const std::string hash = "2aae6c35c94fcfb415dbe95f408b9ce91ee846ed";
     const std::filesystem::path objectPath = objectStorePath / "2a" / "ae6c35c94fcfb415dbe95f408b9ce91ee846ed";
     const std::string data = "hello world";
-    const Blob blob(data.begin(), data.end());
+    const std::vector<uint8_t> blob(data.begin(), data.end());
     mockFs->writeBlobToFile(objectPath, blob);
 
     auto gotBlob = objectStore.getObject(hash);

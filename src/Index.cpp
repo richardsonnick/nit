@@ -8,7 +8,7 @@ namespace nit {
  * Recursively finds files in `baseRepoPath` and adds them to the index.
  */
 void Index::addTree() {
-    indexTree = fsa->getTreeFromPath(baseRepoPath);
+    throw std::runtime_error("Not implemented");
 }
 
 /**

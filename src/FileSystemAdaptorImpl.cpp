@@ -3,7 +3,7 @@
 
 #include <FileSystemAdaptor.h>
 
-void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
+void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const std::vector<uint8_t>& blob) {
     std::ofstream out(path, std::ios::binary);
     if (!out) {
         throw std::runtime_error("Failed to open file for write: " + path.string());
@@ -11,7 +11,7 @@ void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const nit::Blo
     out.write(reinterpret_cast<const char*>(blob.data()), blob.size());
 }
 
-nit::Blob FileSystemAdaptorImpl::fromFile(const fs::path& path) {
+std::vector<uint8_t> FileSystemAdaptorImpl::fromFile(const fs::path& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         throw std::runtime_error("Failed to open file for read: " + path.string());

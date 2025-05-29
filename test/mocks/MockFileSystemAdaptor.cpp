@@ -3,12 +3,12 @@
 #include <hash-object.h>
 
 namespace nit::test {
-void MockFileSystemAdaptor::writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
+void MockFileSystemAdaptor::writeBlobToFile(const fs::path& path, const std::vector<uint8_t>& blob) {
     FileBlob f{path, blob};
     fsMap[path].push_back(f);
 }
 
-nit::Blob MockFileSystemAdaptor::fromFile(const fs::path& path) {
+std::vector<uint8_t> MockFileSystemAdaptor::fromFile(const fs::path& path) {
     auto& vec = fsMap[path.string()];
     for (auto& obj : vec) {
         if (std::holds_alternative<FileBlob>(obj)) {

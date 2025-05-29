@@ -13,7 +13,7 @@ TEST(CommitTests, TestSerializeDeserialize) {
     };
     Commit c("da39a3ee5e6b4b0d3255bfef95601890afd80709", "4015b57a143aec5156fd1444a017a32137a3fd0f",
         "NickR23", committer, "Add CommitTest.cpp");
-    Blob serial = c.serialize();
+    std::vector<uint8_t> serial = c.serialize();
     Commit gotCommit = Commit::deserialize(serial);
     EXPECT_EQ(gotCommit, c);
 

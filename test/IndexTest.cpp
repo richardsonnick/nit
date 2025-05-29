@@ -1,23 +1,28 @@
 #include <gtest/gtest.h>
 #include <Index.h>
 #include <MockFileSystemAdaptor.h>
+#include <TestUtils.h>
 
 using namespace nit;
+namespace fs = std::filesystem;
 
 class IndexTest : public ::testing::Test {
 protected:
-    Index* index;
+    std::unique_ptr<Index> index;
+    std::shared_ptr<nit::test::MockFileSystemAdaptor> fsa; // Use MockFileSystemAdaptor directly
 
     void SetUp() override {
-        std::shared_ptr<FileSystemAdaptorInterface> fsa = std::make_shared<MockFileSystemAdaptor>();
-        index = new Index(fsa, "/home/snoopy/code/doghouse");
+        fsa = std::make_shared<nit::test::MockFileSystemAdaptor>();
+        index = std::make_unique<Index>(fsa, "/home/snoopy/code/doghouse");
+        nit::test::createInitialRepo(fsa);
     }
 
     void TearDown() override {
-        delete index;
     }
 };
 
 TEST_F(IndexTest, TestSanity) {
-    FAIL();
+    EXPECT_TRUE(index->getTree().getEntries().empty());
+    index->addTree();
+    EXPECT_EQ(index->getTree().getEntries().size(), (unsigned long)3);
 }

@@ -32,21 +32,21 @@ std::string Commit::header(const Commit& c) {
 }
 
 // Returns the serialization of the Commit's contents
-Blob Commit::serialize() const {
+std::vector<uint8_t> Commit::serialize() const {
     auto content = Commit::header(*this) + commitMessage;
 
     std::ostringstream headerStream;
     headerStream << "commit " << content.size() << '\0';
     std::string header = headerStream.str();
 
-    Blob data;
+    std::vector<uint8_t> data;
     data.insert(data.end(), header.begin(), header.end());
     data.insert(data.end(), content.begin(), content.end());
 
     return data;
 }
 
-Commit Commit::deserialize(const Blob& data) {
+Commit Commit::deserialize(const std::vector<uint8_t>& data) {
     Commit commit;
     size_t pos = 0;
     const size_t dataSize = data.size();
@@ -108,7 +108,7 @@ Commit Commit::deserialize(const Blob& data) {
 }
 
 void Commit::updateHash() {
-    Blob serialization = serialize();
+    std::vector<uint8_t> serialization = serialize();
     hash = nit::hashObject(serialization);
 }
 

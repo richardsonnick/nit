@@ -24,9 +24,9 @@ public:
 
     void addEntry(const TreeEntry& entry);
     // Returns the serialization of the Tree's contents
-    Blob serialize() const;
+    std::vector<uint8_t> serialize() const;
     void updateHash();
-    static Tree deserialize(const Blob& data);
+    static Tree deserialize(const std::vector<uint8_t>& data);
     const std::vector<TreeEntry>& getEntries() const;
     const std::string& getHash() const;
 

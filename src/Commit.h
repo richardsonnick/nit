@@ -57,8 +57,8 @@ public:
     static std::string header(const Commit& c); 
 
     // Returns the serialization of the Commit's contents
-    Blob serialize() const;
-    static Commit deserialize(const Blob& data);
+    std::vector<uint8_t> serialize() const;
+    static Commit deserialize(const std::vector<uint8_t>& data);
 
     void updateHash();
     void addParent(Commit& parent);

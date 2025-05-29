@@ -11,8 +11,8 @@ void Tree::addEntry(const TreeEntry& entry) {
 }
 
 // Returns the serialization of the Tree's contents
-Blob Tree::serialize() const {
-    Blob data;
+std::vector<uint8_t> Tree::serialize() const {
+    std::vector<uint8_t> data;
     for (const auto& entry : entries) {
         std::string line = entry.mode + " " + entry.name;
         data.insert(data.end(), line.begin(), line.end());
@@ -26,7 +26,7 @@ void Tree::updateHash() {
     hash = nit::hashObject(serialize());
 }
 
-Tree Tree::deserialize(const Blob& data) {
+Tree Tree::deserialize(const std::vector<uint8_t>& data) {
     Tree tree;
     size_t pos = 0, dataSize = data.size();
     while (pos < dataSize) {
