@@ -3,8 +3,6 @@
 
 #include <FileSystemAdaptor.h>
 
-namespace fs = std::filesystem;
-
 void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
     std::ofstream out(path, std::ios::binary);
     if (!out) {
