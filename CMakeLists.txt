@@ -52,6 +52,7 @@ add_executable(nit_tests
   test/IndexTest.cpp
 
   src/Commit.cpp
+  src/FileSystemAdaptorImpl.cpp
 )
 
 target_include_directories(nit_tests

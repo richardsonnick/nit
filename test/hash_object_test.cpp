@@ -2,7 +2,7 @@
 #include <filesystem>
 
 #include <hash-object.h>
-#include <MockFileSystemAdaptor.h>
+#include <FileSystemAdaptor.h>
 
 namespace fs = std::filesystem;
 
