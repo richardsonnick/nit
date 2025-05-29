@@ -1,5 +1,7 @@
 #include <MockFileSystemAdaptor.h>
 
+#include <hash-object.h>
+
 void MockFileSystemAdaptor::writeBlobToFile(const fs::path& path, const nit::Blob& blob) {
     blobStore[path.string()] = blob;
 
