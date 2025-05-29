@@ -1,6 +1,7 @@
-#include <hash/sha1.h>
-#include <FileSystemAdaptor.h>
 #include <filesystem>
+
+#include <hash/sha1.h>
+#include <types.h>
 
 #pragma once
 
@@ -12,8 +13,8 @@ static std::pair<std::string, std::string> decomposeHash(const std::string hash)
     return std::make_pair(prefix, suffix);
 }
 
-static std::string hashBlob(const nit::Blob& blob) {
-    std::string data(reinterpret_cast<const char*>(blob.data()), blob.size());
+static std::string hashObject(const nit::Blob& obj) {
+    std::string data(reinterpret_cast<const char*>(obj.data()), obj.size());
     std::istringstream iss(data);
     return hash::sha1::hash_stream(iss);
 }
