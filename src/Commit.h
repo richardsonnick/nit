@@ -39,6 +39,21 @@ public:
                 updateHash();
             };
 
+    bool operator==(const Commit& other) const {
+        auto committerEqual = [](Committer c, Committer o) {
+            return c.name == o.name &&
+                c.email == o.email &&
+                c.timestamp == o.timestamp &&
+                c.timezone == o.timezone;
+        };
+        return treeHash == other.treeHash && 
+                parentHash == other.parentHash && 
+                author == other.author &&
+                committerEqual(this->committer, other.committer) &&
+                commitMessage == other.commitMessage &&
+                hash == other.hash;
+    }
+
     /**
      * Returns a "blank" commit with only the treeHash.
      * Caller is responsible for filling out the rest of the commit

@@ -50,6 +50,8 @@ add_executable(nit_tests
   test/TreeTest.cpp
   test/CommitTest.cpp
   test/IndexTest.cpp
+
+  src/Commit.cpp
 )
 
 target_include_directories(nit_tests
