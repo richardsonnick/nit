@@ -1,18 +1,27 @@
 #include <FileSystemAdaptor.h>
 #include <unordered_map>
+#include <variant>
 
 namespace fs = std::filesystem;
 
+namespace nit::test {
 class MockFileSystemAdaptor : public FileSystemAdaptorInterface {
 public:
-    // In-memory mapping of path string -> blob content
-    std::unordered_map<std::string, nit::Blob> blobStore;
-    // Simulated file system tree
-    nit::Tree fsTree;
+    struct FileBlob {
+        fs::path name;
+        Blob blob;
+    };
+
+    // Variant type to hold either a Blob or a string
+    using FileOrPath = std::variant<FileBlob, fs::path>;
+
+    // In-memory mapping of path string -> BlobOrString
+    std::unordered_map<std::string, std::vector<FileOrPath>> fsMap;
 
     void writeBlobToFile(const fs::path& path, const nit::Blob& blob) override;
-    nit::Blob getBlobFromFile(const fs::path& path) override;
-    nit::Tree getTreeFromPath(const fs::path& path) override;
+    nit::Blob fromFile(const fs::path& path) override;
 
     void createDirectory(const fs::path& path) override;
 };
+
+} // namespace nit::test

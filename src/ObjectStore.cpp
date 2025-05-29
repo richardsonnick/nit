@@ -14,7 +14,7 @@ std::filesystem::path ObjectStore::putObject(const nit::Blob& blob) {
 Blob ObjectStore::getObject(const std::string hash) {
     auto [prefix, suffix] = decomposeHash(hash);
     const std::filesystem::path path = objectStorePath / prefix / suffix;
-    return fs->getBlobFromFile(path);
+    return fs->fromFile(path);
 }
 
 } // namespace nit

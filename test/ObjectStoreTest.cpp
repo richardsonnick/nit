@@ -8,7 +8,7 @@
 using namespace nit;
 
 TEST(ObjectHashTests, TestPutObject) {
-    std::shared_ptr<FileSystemAdaptorInterface> mockFs = std::make_shared<MockFileSystemAdaptor>();
+    std::shared_ptr<FileSystemAdaptorInterface> mockFs = std::make_shared<nit::test::MockFileSystemAdaptor>();
     const std::filesystem::path objectStorePath("/Users/snoopy/code/doghouse/.nit/objects");
     auto objectStore = ObjectStore(objectStorePath, mockFs);
 
@@ -20,12 +20,12 @@ TEST(ObjectHashTests, TestPutObject) {
     auto gotPath = objectStore.putObject(blob);
     EXPECT_EQ(gotPath, expectedObjectPath);
 
-    auto gotBlob = mockFs->getBlobFromFile(gotPath);
+    auto gotBlob = mockFs->fromFile(gotPath);
     EXPECT_EQ(blob, gotBlob);
 }
 
 TEST(ObjectHashTests, TestGetObject) {
-    std::shared_ptr<FileSystemAdaptorInterface> mockFs = std::make_shared<MockFileSystemAdaptor>();
+    std::shared_ptr<FileSystemAdaptorInterface> mockFs = std::make_shared<nit::test::MockFileSystemAdaptor>();
     const std::filesystem::path objectStorePath("/Users/snoopy/code/doghouse/.nit/objects");
     auto objectStore = ObjectStore(objectStorePath, mockFs);
 

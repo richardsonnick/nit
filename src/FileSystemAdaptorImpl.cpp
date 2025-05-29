@@ -11,7 +11,7 @@ void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const nit::Blo
     out.write(reinterpret_cast<const char*>(blob.data()), blob.size());
 }
 
-nit::Blob FileSystemAdaptorImpl::getBlobFromFile(const fs::path& path) {
+nit::Blob FileSystemAdaptorImpl::fromFile(const fs::path& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         throw std::runtime_error("Failed to open file for read: " + path.string());
@@ -28,11 +28,6 @@ nit::Blob FileSystemAdaptorImpl::getBlobFromFile(const fs::path& path) {
 
     return buffer;
 }
-
-nit::Tree FileSystemAdaptorImpl::getTreeFromPath(const fs::path& path) {
-    throw std::runtime_error("Not implemented");
-    return {};
-} 
 
 void FileSystemAdaptorImpl::createDirectory(const fs::path& path) {
     throw std::runtime_error("Not implemented");
