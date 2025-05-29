@@ -1,5 +1,3 @@
-#include <vector>
-#include <hash-object.h>
 #include <types.h>
 #include <Tree.h>
 
@@ -8,8 +6,6 @@
 namespace fs = std::filesystem;
 
 namespace nit {
-
-std::string hashObject(const nit::Blob& obj);
 
 struct Committer {
     std::string name;

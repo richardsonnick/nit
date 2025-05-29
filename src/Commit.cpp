@@ -1,15 +1,10 @@
-#include <vector>
-#include <hash-object.h>
-#include <types.h>
-#include <Tree.h>
-
 #include <Commit.h>
+
+#include <hash-object.h>
 
 namespace fs = std::filesystem;
 
 namespace nit {
-
-//std::string hashObject(const nit::Blob& obj);
 
 std::string committerToString(const Committer& c) {
     return c.name + " <" + c.email + "> " + c.timestamp + " " + c.timezone;
