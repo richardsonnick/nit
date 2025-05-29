@@ -27,6 +27,7 @@ target_sources(nitlib INTERFACE
   src/hash-object.cpp
   src/FileSystemAdaptorImpl.cpp
   src/Commit.cpp
+  src/Tree.cpp
 )
 
 ## EXECUTABLE SETUP
