@@ -53,6 +53,7 @@ add_executable(nit_tests
 
   src/Commit.cpp
   src/FileSystemAdaptorImpl.cpp
+  test/mocks/MockFileSystemAdaptor.cpp
 )
 
 target_include_directories(nit_tests
