@@ -20,10 +20,17 @@ find_package(boogielib REQUIRED PATHS /usr/local/lib/boogielib)
 add_library(nitlib INTERFACE)
 target_include_directories(nitlib INTERFACE src)
 target_compile_options(nitlib INTERFACE -Wall -Wextra -Wpedantic)
-target_sources(nitlib INTERFACE src/hash-object.h src/FileSystemAdaptor.h src/types.h)
+target_sources(nitlib INTERFACE
+  src/hash-object.h
+  src/FileSystemAdaptor.h
+  src/types.h
+  src/hash-object.cpp
+  src/FileSystemAdaptorImpl.cpp
+  src/Commit.cpp
+)
 
 ## EXECUTABLE SETUP
-add_executable(nit src/main.cpp)
+add_executable(nit src/main.cpp src/hash-object.cpp)
 target_link_libraries(nit PRIVATE nitlib)
 target_compile_options(nit PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(nit PRIVATE boogielib)
@@ -50,10 +57,6 @@ add_executable(nit_tests
   test/TreeTest.cpp
   test/CommitTest.cpp
   test/IndexTest.cpp
-
-  src/Commit.cpp
-  src/FileSystemAdaptorImpl.cpp
-  test/mocks/MockFileSystemAdaptor.cpp
 )
 
 target_include_directories(nit_tests
