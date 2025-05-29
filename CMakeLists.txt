@@ -61,12 +61,14 @@ add_executable(nit_tests
   test/CommitTest.cpp
   test/IndexTest.cpp
   test/mocks/MockFileSystemAdaptor.cpp
+  test/utils/TestUtils.h
 )
 
 target_include_directories(nit_tests
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/test/mocks
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/utils
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
