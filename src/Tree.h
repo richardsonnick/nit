@@ -1,5 +1,8 @@
 #include <vector>
 
+#include <types.h>
+#include <hash-object.h>
+
 #pragma once
 
 namespace nit {
