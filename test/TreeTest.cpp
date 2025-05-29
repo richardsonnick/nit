@@ -5,14 +5,13 @@ using namespace nit;
 
 class TreeTest : public ::testing::Test {
 protected:
-    Tree* tree;
+    std::unique_ptr<Tree> tree;
 
     void SetUp() override {
-        tree = new Tree();
+        tree = std::make_unique<Tree>();
     }
 
     void TearDown() override {
-        delete tree;
     }
 };
 
