@@ -57,6 +57,7 @@ add_executable(nit_tests
   test/TreeTest.cpp
   test/CommitTest.cpp
   test/IndexTest.cpp
+  test/mocks/MockFileSystemAdaptor.cpp
 )
 
 target_include_directories(nit_tests
