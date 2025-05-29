@@ -4,8 +4,6 @@
 #include <Tree.h>
 #include <Commit.h>
 
-namespace fs = std::filesystem;
-
 #pragma once
 
 namespace nit {
@@ -14,34 +12,25 @@ namespace nit {
  */
 class Index {
 public:
-    Index(const std::shared_ptr<FileSystemAdaptorInterface> fsa, const fs::path& baseRepoPath) :  fsa(fsa), baseRepoPath(baseRepoPath) {}
+    Index(const std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& baseRepoPath) :  fsa(fsa), baseRepoPath(baseRepoPath) {}
 
     /**
      * Recursively finds files in `baseRepoPath` and adds them to the index.
      */
-    void addTree() {
-        indexTree = fsa->getTreeFromPath(baseRepoPath);
-    }
+    void addTree();
 
     /**
      * This commit is "blank". It is on the caller
      * to fill this commit out before "committing".
      */
-    Commit fromIndexTree() const {
-        return Commit::fromTree(indexTree);
-    }
+    Commit fromIndexTree() const;
 
-    const fs::path& getRepoPath() const {
-        return baseRepoPath;
-    }
-
-    const Tree& getTree() const {
-        return indexTree;
-    }
+    const fs::path& getRepoPath() const;
+    const Tree& getTree() const;
 
 private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
-    fs::path baseRepoPath; // The parent directory that contains `.nit`.
+    std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
     Tree indexTree;
 };
 

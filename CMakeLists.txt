@@ -29,6 +29,7 @@ target_sources(nitlib INTERFACE
   src/Commit.cpp
   src/Tree.cpp
   src/ObjectStore.cpp
+  src/Index.cpp
 )
 
 ## EXECUTABLE SETUP
