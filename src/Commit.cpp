@@ -1,4 +1,5 @@
 #include <Commit.h>
+#include <sstream>
 
 #include <hash-object.h>
 
