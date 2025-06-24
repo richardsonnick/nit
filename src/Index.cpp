@@ -35,12 +35,12 @@ void Index::addTrees() {
         } else {
             treeMap[path] = Tree();
             mode = DIRMODE;
-            hash = ""; // this is computed at the end.
             entry = {
                 relativePath, 
                 mode,
-                hash
+                ""
             };
+            treeMap[path].updateHash();
         }
         treeMap[path.parent_path()].addEntry(entry);
     });

@@ -29,17 +29,17 @@ inline void ensurePathExists(
 }
 
 /** 
- * Recursively executes func on each intermediate entry starting from `root`. Works top down.
+ * Recursively executes func on each intermediate entry starting from `root`. Works bottom up.
  */ 
 template<typename Func>
 void walkIntermediateEntries(
         FileSystemAdaptorInterface* fsa,
         const std::filesystem::path& root,
         Func&& func) {
-    func(root);
     for (auto& entry : fsa->getEntries(root)) {
         walkIntermediateEntries(fsa, entry, func);
     }
+    func(root);
 }
 
 
