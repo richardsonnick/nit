@@ -20,7 +20,7 @@ TEST(ObjectHashTests, TestPutObject) {
     auto gotPath = objectStore.putObject(blob);
     EXPECT_EQ(gotPath, expectedObjectPath);
 
-    auto gotBlob = mockFs->fromFile(gotPath);
+    auto gotBlob = mockFs->fromPath(gotPath).blob;
     EXPECT_EQ(blob, gotBlob);
 }
 

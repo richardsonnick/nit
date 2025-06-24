@@ -13,18 +13,16 @@ class FileSystemAdaptorInterface {
     public:
 
     struct File {
-        std::filesystem::path name;
+        std::filesystem::path path;
         std::vector<uint8_t> blob;
     };
 
-    using PathOrFile = std::variant<std::filesystem::path, File>;
+    using Directory = std::vector<std::filesystem::path>;
 
-    static bool isFileBlob(const PathOrFile& pathOrBlob) {
-        return std::holds_alternative<File>(pathOrBlob);
-    }
+    using DirectoryOrFile = std::variant<Directory, File>;
 
     virtual ~FileSystemAdaptorInterface() = default;
-    virtual std::vector<uint8_t> fromFile(const std::filesystem::path& path) = 0;
+    virtual File fromPath(const std::filesystem::path& path) = 0;
 
     /**
     * These creation type functions will prempitively create the directory structure needed
@@ -40,15 +38,15 @@ class FileSystemAdaptorInterface {
      **/
     virtual std::vector<std::filesystem::path> getEntries(const std::filesystem::path& path) = 0;
 
-    virtual void addEntry(const std::filesystem::path& path, const PathOrFile entry) = 0;
+    virtual void addEntry(const std::filesystem::path& path, const DirectoryOrFile entry) = 0;
 };
 
 class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     public:
     void writeBlobToFile(const std::filesystem::path& path, const std::vector<uint8_t>& blob) override;
-    std::vector<uint8_t> fromFile(const std::filesystem::path& path) override;
+    File fromPath(const std::filesystem::path& path) override;
     void createDirectory(const std::filesystem::path& path) override;
     bool pathExists(const std::filesystem::path &path) override;
     std::vector<std::filesystem::path> getEntries(const std::filesystem::path& path) override;
-    void addEntry(const std::filesystem::path& path, const PathOrFile entry) override;
+    void addEntry(const std::filesystem::path& path, const DirectoryOrFile entry) override;
 };

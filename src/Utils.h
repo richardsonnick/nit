@@ -20,9 +20,10 @@ void walkIntermediatePaths(const std::filesystem::path& path, Func&& func) {
 void ensurePathExists(
   FileSystemAdaptorInterface* fsa, const std::filesystem::path& path) {
   nit::utils::walkIntermediatePaths(path, [&](const std::filesystem::path& path) {
-    fsa->createDirectory(path);
     if (path.root_path() != path) {
-        fsa->addEntry(path.parent_path(), path);
+        fsa->addEntry(path, {});
+    } else {
+        fsa->createDirectory(path);
     }
   });
 }

@@ -14,7 +14,7 @@ std::filesystem::path ObjectStore::putObject(const std::vector<uint8_t>& blob) {
 std::vector<uint8_t> ObjectStore::getObject(const std::string hash) {
     auto [prefix, suffix] = decomposeHash(hash);
     const std::filesystem::path path = objectStorePath / prefix / suffix;
-    return fs->fromFile(path);
+    return fs->fromPath(path).blob;
 }
 
 } // namespace nit
