@@ -18,7 +18,7 @@ FileSystemAdaptorImpl::File MockFileSystemAdaptor::fromPath(const std::filesyste
   }
   auto& entry = fsMap[path];
   if (!std::holds_alternative<File>(entry)) {
-    throw std::runtime_error("Entry at path: " + path.string() + " is not a blob.");
+    throw std::runtime_error("Entry at path: " + path.string() + " is not a file.");
   }
   return std::get<File>(entry);
 }
@@ -33,6 +33,13 @@ bool MockFileSystemAdaptor::pathExists(const std::filesystem::path &path) {
   return fsMap.find(path) != fsMap.end();
 }
 
+bool MockFileSystemAdaptor::isFile(const std::filesystem::path& path) {
+  auto& entry = fsMap[path];
+  if (!std::holds_alternative<File>(entry)) {
+    return false;
+  }
+  return true;
+}
 
 std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::filesystem::path &path) {
   auto& entry = fsMap[path];

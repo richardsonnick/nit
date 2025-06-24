@@ -29,6 +29,10 @@ FileSystemAdaptorImpl::File FileSystemAdaptorImpl::fromPath(const std::filesyste
     return File{path, buffer};
 }
 
+bool FileSystemAdaptorImpl::isFile(const std::filesystem::path& path) {
+    throw std::runtime_error("Not implemented");
+}
+
 void FileSystemAdaptorImpl::createDirectory(const std::filesystem::path& path) {
     throw std::runtime_error("Not implemented");
 } 

@@ -24,6 +24,8 @@ class FileSystemAdaptorInterface {
     virtual ~FileSystemAdaptorInterface() = default;
     virtual File fromPath(const std::filesystem::path& path) = 0;
 
+    virtual bool isFile(const std::filesystem::path& path) = 0;
+
     /**
     * These creation type functions will prempitively create the directory structure needed
     * for the given path. i.e. this will create the necessary path recursively for the desired write path.
@@ -45,6 +47,7 @@ class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     public:
     void writeBlobToFile(const std::filesystem::path& path, const std::vector<uint8_t>& blob) override;
     File fromPath(const std::filesystem::path& path) override;
+    bool isFile(const std::filesystem::path& path) override; 
     void createDirectory(const std::filesystem::path& path) override;
     bool pathExists(const std::filesystem::path &path) override;
     std::vector<std::filesystem::path> getEntries(const std::filesystem::path& path) override;
