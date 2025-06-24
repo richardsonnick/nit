@@ -42,6 +42,6 @@ std::vector<std::filesystem::path> FileSystemAdaptorImpl::getEntries(const std::
   return {};
 }
 
-void FileSystemAdaptorImpl::addEntry(const std::filesystem::path& path, const PathOrBlob entry) {
+void FileSystemAdaptorImpl::addEntry(const std::filesystem::path& path, const PathOrFile entry) {
   throw std::runtime_error("Not implemented");
 }

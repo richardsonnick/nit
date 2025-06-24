@@ -8,7 +8,7 @@ namespace nit::test {
 void MockFileSystemAdaptor::writeBlobToFile(const std::filesystem::path &path,
                                             const std::vector<uint8_t> &blob) {
   nit::utils::ensurePathExists(this, path.parent_path());
-  FileBlob fb {path, blob};
+  File fb {path, blob};
   addEntry(path.parent_path(), fb);
 }
 
@@ -35,7 +35,7 @@ std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::
 }
 
 void MockFileSystemAdaptor::addEntry(const std::filesystem::path &path,
-   const PathOrBlob entry) {
+   const PathOrFile entry) {
   if (pathExists(path)) {
     fsMap[path].push_back(entry);
   }
