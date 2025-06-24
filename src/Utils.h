@@ -17,7 +17,7 @@ void walkIntermediatePaths(const std::filesystem::path& path, Func&& func) {
 }
 
 // "Preemptively" ensures the given path exists.
-void ensurePathExists(
+inline void ensurePathExists(
   FileSystemAdaptorInterface* fsa, const std::filesystem::path& path) {
   nit::utils::walkIntermediatePaths(path, [&](const std::filesystem::path& path) {
     if (path.root_path() != path) {
@@ -28,6 +28,19 @@ void ensurePathExists(
   });
 }
 
+/** 
+ * Recursively executes func on each intermediate entry starting from `root`. Works top down.
+ */ 
+template<typename Func>
+void walkIntermediateEntries(
+        FileSystemAdaptorInterface* fsa,
+        const std::filesystem::path& root,
+        Func&& func) {
+    func(root);
+    for (auto& entry : fsa->getEntries(root)) {
+        walkIntermediateEntries(fsa, entry, func);
+    }
+}
 
 
 } // namespace nit::utils

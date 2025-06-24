@@ -21,8 +21,8 @@ protected:
     }
 };
 
-TEST_F(IndexTest, TestSanity) {
-    EXPECT_TRUE(index->getTree().getEntries().empty());
-    index->addTree();
-    EXPECT_EQ(index->getTree().getEntries().size(), (unsigned long)3);
+TEST_F(IndexTest, TestAddTrees) {
+    EXPECT_TRUE(index->getTrees().empty());
+    index->addTrees();
+    EXPECT_EQ(index->getTrees().size(), (unsigned long)3);
 }

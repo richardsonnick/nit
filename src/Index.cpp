@@ -1,14 +1,54 @@
 #include <Index.h>
-
-namespace fs = std::filesystem;
+#include <hash-object.h>
+#include <Utils.h>
+#include <unordered_map>
 
 namespace nit {
+
+std::vector<uint8_t> Index::serialize() {
+    return {};
+}
+
+Index deserialize(std::vector<uint8_t> blob) {
+    return {};
+}
 
 /**
  * Recursively finds files in `baseRepoPath` and adds them to the index.
  */
-void Index::addTree() {
-    throw std::runtime_error("Not implemented");
+void Index::addTrees() {
+    std::unordered_map<std::filesystem::path, Tree> treeMap;
+
+    nit::utils::walkIntermediateEntries(fsa.get(), baseRepoPath, [&](const std::filesystem::path& path){
+        std::string mode;
+        std::string hash;
+        auto relativePath = std::filesystem::relative(path, baseRepoPath);
+        TreeEntry entry;
+        if (fsa->isFile(path)) {
+            mode = FILEMODE;
+            hash = hashObject(fsa->fromPath(path).blob);
+            entry = {
+                relativePath, 
+                mode,
+                hash
+            };
+        } else {
+            treeMap[path] = Tree();
+            mode = DIRMODE;
+            hash = ""; // this is computed at the end.
+            entry = {
+                relativePath, 
+                mode,
+                hash
+            };
+        }
+        treeMap[path.parent_path()].addEntry(entry);
+    });
+
+    indexTrees.reserve(treeMap.size());
+    for (auto& [path, tree] : treeMap) {
+        indexTrees.push_back(tree);
+    }
 }
 
 /**
@@ -16,15 +56,16 @@ void Index::addTree() {
  * to fill this commit out before "committing".
  */
 Commit Index::fromIndexTree() const {
-    return Commit::fromTree(indexTree);
+    throw new std::runtime_error("Not implemented.");
+    // return Commit::fromTree(indexTree);
 }
 
-const fs::path& Index::getRepoPath() const {
+const std::filesystem::path& Index::getRepoPath() const {
     return baseRepoPath;
 }
 
-const Tree& Index::getTree() const {
-    return indexTree;
+const std::vector<Tree>& Index::getTrees() const {
+    return indexTrees;
 }
 
 } // namespace nit

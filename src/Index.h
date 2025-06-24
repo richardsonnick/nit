@@ -12,12 +12,25 @@ namespace nit {
  */
 class Index {
 public:
+    Index() = default;
     Index(const std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& baseRepoPath) :  fsa(fsa), baseRepoPath(baseRepoPath) {}
+
+    // TODO: returns the deserialized Index from path.
+    static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
+        FileSystemAdaptorInterface::File file = fsa->fromPath(path);
+        return deserialize(file.blob);
+    }
+
+
+    // TODO: https://mincong.io/2018/04/28/git-index/
+    std::vector<uint8_t> serialize();
+    static Index deserialize(std::vector<uint8_t>);
 
     /**
      * Recursively finds files in `baseRepoPath` and adds them to the index.
      */
-    void addTree();
+    // TODO this should take a path and only add the recursive entries to the index.
+    void addTrees();
 
     /**
      * This commit is "blank". It is on the caller
@@ -26,12 +39,12 @@ public:
     Commit fromIndexTree() const;
 
     const std::filesystem::path& getRepoPath() const;
-    const Tree& getTree() const;
+    const std::vector<Tree>& getTrees() const;
 
 private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
     std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
-    Tree indexTree;
+    std::vector<Tree> indexTrees;
 };
 
 } // namespace nit
