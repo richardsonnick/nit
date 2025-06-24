@@ -24,6 +24,7 @@ target_sources(nitlib INTERFACE
   src/hash-object.h
   src/FileSystemAdaptor.h
   src/types.h
+  src/Utils.h
   src/hash-object.cpp
   src/FileSystemAdaptorImpl.cpp
   src/Commit.cpp

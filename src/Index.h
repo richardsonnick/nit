@@ -25,7 +25,7 @@ public:
      */
     Commit fromIndexTree() const;
 
-    const fs::path& getRepoPath() const;
+    const std::filesystem::path& getRepoPath() const;
     const Tree& getTree() const;
 
 private:

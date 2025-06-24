@@ -9,12 +9,12 @@ namespace nit::test {
  */
 std::string createInitialRepo(std::shared_ptr<FileSystemAdaptorInterface> fsa) {
     // Setup a initial test project repo
-    fs::path repoPath = "/home/snoopy/code/doghouse";
-    fs::path srcPath = repoPath / "src";
-    fs::path nitPath = repoPath / ".nit";
-    fs::path includePath = repoPath / "include";
-    fs::path mainCppPath = srcPath / "main.cpp";
-    fs::path headerPath = includePath / "header.h";
+    std::filesystem::path repoPath = "/home/snoopy/code/doghouse";
+    std::filesystem::path srcPath = repoPath / "src";
+    std::filesystem::path nitPath = repoPath / ".nit";
+    std::filesystem::path includePath = repoPath / "include";
+    std::filesystem::path mainCppPath = srcPath / "main.cpp";
+    std::filesystem::path headerPath = includePath / "header.h";
 
     fsa->createDirectory(srcPath);
     fsa->createDirectory(includePath);

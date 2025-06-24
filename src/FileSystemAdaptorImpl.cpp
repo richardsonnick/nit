@@ -3,7 +3,7 @@
 
 #include <FileSystemAdaptor.h>
 
-void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const std::vector<uint8_t>& blob) {
+void FileSystemAdaptorImpl::writeBlobToFile(const std::filesystem::path& path, const std::vector<uint8_t>& blob) {
     std::ofstream out(path, std::ios::binary);
     if (!out) {
         throw std::runtime_error("Failed to open file for write: " + path.string());
@@ -11,7 +11,7 @@ void FileSystemAdaptorImpl::writeBlobToFile(const fs::path& path, const std::vec
     out.write(reinterpret_cast<const char*>(blob.data()), blob.size());
 }
 
-std::vector<uint8_t> FileSystemAdaptorImpl::fromFile(const fs::path& path) {
+std::vector<uint8_t> FileSystemAdaptorImpl::fromFile(const std::filesystem::path& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         throw std::runtime_error("Failed to open file for read: " + path.string());
@@ -29,6 +29,19 @@ std::vector<uint8_t> FileSystemAdaptorImpl::fromFile(const fs::path& path) {
     return buffer;
 }
 
-void FileSystemAdaptorImpl::createDirectory(const fs::path& path) {
+void FileSystemAdaptorImpl::createDirectory(const std::filesystem::path& path) {
     throw std::runtime_error("Not implemented");
 } 
+
+bool FileSystemAdaptorImpl::pathExists(const std::filesystem::path &path) {
+    throw std::runtime_error("Not implemented");
+}
+
+std::vector<std::filesystem::path> FileSystemAdaptorImpl::getEntries(const std::filesystem::path& path) {
+  throw std::runtime_error("Not implemented");
+  return {};
+}
+
+void FileSystemAdaptorImpl::addEntry(const std::filesystem::path& path, const PathOrBlob entry) {
+  throw std::runtime_error("Not implemented");
+}

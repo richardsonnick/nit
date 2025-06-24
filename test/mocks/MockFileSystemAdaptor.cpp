@@ -1,28 +1,44 @@
 #include <MockFileSystemAdaptor.h>
+#include <Utils.h>
 
 #include <hash-object.h>
 
 namespace nit::test {
-void MockFileSystemAdaptor::writeBlobToFile(const fs::path& path, const std::vector<uint8_t>& blob) {
-    FileBlob f{path, blob};
-    fsMap[path].push_back(f);
+
+void MockFileSystemAdaptor::writeBlobToFile(const std::filesystem::path &path,
+                                            const std::vector<uint8_t> &blob) {
+  nit::utils::ensurePathExists(this, path.parent_path());
+  FileBlob fb {path, blob};
+  addEntry(path.parent_path(), fb);
 }
 
-std::vector<uint8_t> MockFileSystemAdaptor::fromFile(const fs::path& path) {
-    auto& vec = fsMap[path.string()];
-    for (auto& obj : vec) {
-        if (std::holds_alternative<FileBlob>(obj)) {
-            FileBlob f = std::get<FileBlob>(obj);
-            if (f.name == path) {
-                return f.blob;
-            }
-        }
-    }
-   throw std::runtime_error("No FileBlob found for path: " + path.string());
+std::vector<uint8_t> MockFileSystemAdaptor::fromFile(const std::filesystem::path &path) {
+  // if (blobMap.find(path) == blobMap.end()) {
+  throw std::runtime_error("No FileBlob found for path: " + path.string());
+  // }
+  // return blobMap[path];
 }
 
-void MockFileSystemAdaptor::createDirectory(const fs::path& path) {
-    fsMap[path.string()]  = {};
+void MockFileSystemAdaptor::createDirectory(const std::filesystem::path &path) {
+  if (!pathExists(path)) {
+    fsMap[path] = {};
+  }
+}
+
+bool MockFileSystemAdaptor::pathExists(const std::filesystem::path &path) {
+  return fsMap.find(path) != fsMap.end();
+}
+
+
+std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::filesystem::path &path) {
+  return {};
+}
+
+void MockFileSystemAdaptor::addEntry(const std::filesystem::path &path,
+   const PathOrBlob entry) {
+  if (pathExists(path)) {
+    fsMap[path].push_back(entry);
+  }
 }
 
 } // namespace nit::test
