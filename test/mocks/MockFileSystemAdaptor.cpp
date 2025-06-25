@@ -12,6 +12,13 @@ void MockFileSystemAdaptor::writeBlobToFile(const std::filesystem::path &path,
   addEntry(fb.path, fb);
 }
 
+FileMetadata MockFileSystemAdaptor::metadataFromPath(const std::filesystem::path& path) {
+  if (fsMap.find(path) == fsMap.end()) {
+    throw std::runtime_error("No File found for path: " + path.string());
+  }
+  return fsMap[path].second;
+}
+
 File MockFileSystemAdaptor::fromPath(const std::filesystem::path &path) {
   if (fsMap.find(path) == fsMap.end()) {
     throw std::runtime_error("No File found for path: " + path.string());
@@ -58,6 +65,12 @@ void MockFileSystemAdaptor::addEntry(const std::filesystem::path &path,
       parentDirectory.push_back(path);
       fsMap[path] = {entry, {}};
     }
+  }
+}
+
+void MockFileSystemAdaptor::setMetadata(const std::filesystem::path& path, const FileMetadata& metadata)  {
+  if (pathExists(path)) {
+    fsMap[path].second = metadata;
   }
 }
 

@@ -31,6 +31,10 @@ File FileSystemAdaptorImpl::fromPath(const std::filesystem::path& path) {
     return File{path, buffer};
 }
 
+FileMetadata FileSystemAdaptorImpl::metadataFromPath(const std::filesystem::path& path) {
+  throw new std::runtime_error("Not implemented.");
+}
+
 bool FileSystemAdaptorImpl::isFile(const std::filesystem::path& path) {
     throw std::runtime_error("Not implemented");
 }
@@ -49,6 +53,10 @@ std::vector<std::filesystem::path> FileSystemAdaptorImpl::getEntries(const std::
 }
 
 void FileSystemAdaptorImpl::addEntry(const std::filesystem::path& path, const DirectoryOrFile entry) {
+  throw std::runtime_error("Not implemented");
+}
+
+void FileSystemAdaptorImpl::setMetadata(const std::filesystem::path& path, const FileMetadata& metadata)  {
   throw std::runtime_error("Not implemented");
 }
 
