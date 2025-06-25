@@ -21,28 +21,40 @@ void Index::addTrees() {
 
     nit::utils::walkIntermediateEntries(fsa.get(), baseRepoPath, [&](const std::filesystem::path& path){
         std::string mode;
-        std::string hash;
         auto relativePath = std::filesystem::relative(path, baseRepoPath);
+        if (relativePath.string().starts_with(".nit")) {
+            return;
+        }
+
         TreeEntry entry;
         if (fsa->isFile(path)) {
+            IndexEntry indexEntry = fromPath(path);
+            entries.push_back(indexEntry);
             mode = FILEMODE;
-            hash = hashObject(fsa->fromPath(path).blob);
+            // TODO we compute the hash twice for the raw and string versions. Let's fix this.
+            std::string hexHash = hashObject(fsa->fromPath(path).blob);
             entry = {
                 relativePath, 
                 mode,
-                hash
+                hexHash
             };
         } else {
-            treeMap[path] = Tree();
             mode = DIRMODE;
+            treeMap[path].updateHash();
             entry = {
                 relativePath, 
                 mode,
-                ""
+                treeMap[path].getHash()
             };
-            treeMap[path].updateHash();
+            if (treeMap.find(path) == treeMap.end()) {
+                treeMap[path] = Tree();
+            }
         }
+        if (path == baseRepoPath) {
+            rootTree = treeMap[path];
+        } else {
         treeMap[path.parent_path()].addEntry(entry);
+        }
     });
 
     indexTrees.reserve(treeMap.size());
@@ -66,6 +78,10 @@ const std::filesystem::path& Index::getRepoPath() const {
 
 const std::vector<Tree>& Index::getTrees() const {
     return indexTrees;
+}
+
+const std::vector<IndexEntry>& Index::getEntries() const {
+    return entries;
 }
 
 } // namespace nit

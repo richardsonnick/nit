@@ -15,6 +15,8 @@ protected:
         fsa = std::make_shared<nit::test::MockFileSystemAdaptor>();
         index = std::make_unique<Index>(fsa, "/home/snoopy/code/doghouse");
         nit::test::createInitialRepo(fsa);
+        auto baseRepoDir = std::get<FileSystemAdaptorInterface::Directory>(fsa->fsMap["/home/snoopy/code/doghouse"].first);
+        ASSERT_EQ(baseRepoDir.size(), (size_t) 3);
     }
 
     void TearDown() override {
@@ -24,5 +26,8 @@ protected:
 TEST_F(IndexTest, TestAddTrees) {
     EXPECT_TRUE(index->getTrees().empty());
     index->addTrees();
-    EXPECT_EQ(index->getTrees().size(), (unsigned long)3);
+    auto trees = index->getTrees();
+    EXPECT_EQ(trees.size(), (unsigned long)3);
+    auto entries = index->getEntries();
+    EXPECT_EQ(entries.size(), (unsigned long)3); // Entries should reflect number of ~Files~ not ~Directories~ (this is contained in Trees)
 }

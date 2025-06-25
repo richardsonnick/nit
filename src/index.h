@@ -17,7 +17,7 @@ public:
 
     // TODO: returns the deserialized Index from path.
     static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
-        File file = fsa->fromPath(path);
+        FileSystemAdaptorInterface::File file = fsa->fromPath(path);
         return deserialize(file.blob);
     }
 
@@ -45,6 +45,9 @@ private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
     std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
     std::vector<Tree> indexTrees;
+    std::vector<IndexEntry> entries;
+
+    IndexEntry fromPath(const std::filesystem::path& path);
 };
 
 } // namespace nit
