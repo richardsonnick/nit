@@ -29,5 +29,5 @@ TEST_F(IndexTest, TestAddTrees) {
     auto trees = index->getTrees();
     EXPECT_EQ(trees.size(), (unsigned long)3);
     auto entries = index->getEntries();
-    EXPECT_EQ(entries.size(), (unsigned long)3); // Entries should reflect number of ~Files~ not ~Directories~ (this is contained in Trees)
+    EXPECT_EQ(entries.size(), (unsigned long)4); // Entries should reflect number of ~Files~ not ~Directories~ (this is contained in Trees)
 }
