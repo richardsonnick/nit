@@ -3,10 +3,18 @@
 #include <FileSystemAdaptor.h>
 #include <Tree.h>
 #include <Commit.h>
+#include <Utils.h>
 
 #pragma once
 
 namespace nit {
+
+struct IndexEntry {
+    FileMetadata metadata;
+    std::array<uint32_t, utils::SHA1_HASH_SIZE / 4> hash; // 5 * 4 bytes = 20 bytes (SHA-1)
+    uint16_t flags;
+};
+
 /**
  * Represents the index (staging area) for nit objects.
  */
@@ -17,7 +25,7 @@ public:
 
     // TODO: returns the deserialized Index from path.
     static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
-        FileSystemAdaptorInterface::File file = fsa->fromPath(path);
+        File file = fsa->fromPath(path);
         return deserialize(file.blob);
     }
 
@@ -39,11 +47,13 @@ public:
     Commit fromIndexTree() const;
 
     const std::filesystem::path& getRepoPath() const;
+    const std::vector<IndexEntry>& getEntries() const;
     const std::vector<Tree>& getTrees() const;
 
 private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
     std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
+    Tree rootTree;
     std::vector<Tree> indexTrees;
     std::vector<IndexEntry> entries;
 

@@ -1,16 +1,64 @@
 #include <Index.h>
 #include <hash-object.h>
-#include <Utils.h>
 #include <unordered_map>
 
 namespace nit {
 
+void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry& entry) {
+    auto pushback32 = [&serialization](const uint32_t data){
+        serialization.push_back((uint8_t) (data >> 24));
+        serialization.push_back((uint8_t) (data >> 16));
+        serialization.push_back((uint8_t) (data >> 8));
+        serialization.push_back((uint8_t) (data & 0xFF));
+    };
+    FileMetadata metadata = entry.metadata;
+    pushback32(entry.metadata.ctime);
+    pushback32(entry.metadata.mtime);
+    pushback32(entry.metadata.deviceID);
+    pushback32(entry.metadata.inode);
+    pushback32(entry.metadata.fileMode);
+    pushback32(entry.metadata.userId);
+    pushback32(entry.metadata.groupId);
+    pushback32(entry.metadata.fileSize);
+    for (auto hashChunk : entry.hash) {
+        pushback32(hashChunk);
+    }
+    serialization.push_back((uint8_t) (entry.flags >> 8));
+    serialization.push_back((uint8_t) (entry.flags & 0xFF));
+
+    for (char c : entry.metadata.pathName) {
+        serialization.push_back(static_cast<uint8_t>(c));
+    }
+}
+
 std::vector<uint8_t> Index::serialize() {
-    return {};
+    std::vector<uint8_t> serialization;
+    // bit pack header
+    uint8_t dircache = 0x00; // TODO make this frfr
+    uint8_t version = 0x01; // Using my own versioning. git's current index version is 0x02 (i think)
+    uint8_t numEntries = entries.size();
+    uint16_t header = ((uint16_t) dircache << 8) ^ ((uint16_t) version << 4) ^ ((uint16_t) numEntries);
+    serialization.push_back((uint8_t) (header >> 8));
+    serialization.push_back((uint8_t) (header & 0xFF));
+
+    for (IndexEntry& entry : entries) {
+        appendSerializedEntry(serialization, entry);
+    }
+
+    return serialization;
 }
 
 Index deserialize(std::vector<uint8_t> blob) {
     return {};
+}
+
+IndexEntry Index::fromPath(const std::filesystem::path& path) {
+    IndexEntry entry{};
+    // TODO we do this twice for each entry bc the Tree repr uses hex
+    //  while Index uses raw bytes.
+    entry.hash = hashObjectRaw(fsa->fromPath(path).blob);
+    entry.metadata = fsa->metadataFromPath(path);
+    return entry;
 }
 
 /**
@@ -53,7 +101,7 @@ void Index::addTrees() {
         if (path == baseRepoPath) {
             rootTree = treeMap[path];
         } else {
-        treeMap[path.parent_path()].addEntry(entry);
+            treeMap[path.parent_path()].addEntry(entry);
         }
     });
 
