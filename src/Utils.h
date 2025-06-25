@@ -5,6 +5,8 @@
 
 namespace nit::utils {
 
+inline constexpr uint8_t SHA1_HASH_SIZE = 20;
+
 /** 
  * Executes func on each intermediate path in `path`.
  */ 
@@ -20,6 +22,9 @@ void walkIntermediatePaths(const std::filesystem::path& path, Func&& func) {
 inline void ensurePathExists(
   FileSystemAdaptorInterface* fsa, const std::filesystem::path& path) {
   nit::utils::walkIntermediatePaths(path, [&](const std::filesystem::path& path) {
+    if (fsa->pathExists(path)) {
+        return;
+    }
     if (path.root_path() != path) {
         fsa->addEntry(path, {});
     } else {
