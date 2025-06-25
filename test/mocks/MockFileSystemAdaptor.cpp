@@ -16,7 +16,7 @@ File MockFileSystemAdaptor::fromPath(const std::filesystem::path &path) {
   if (fsMap.find(path) == fsMap.end()) {
     throw std::runtime_error("No File found for path: " + path.string());
   }
-  auto& entry = fsMap[path];
+  auto& entry = fsMap[path].first;
   if (!std::holds_alternative<File>(entry)) {
     throw std::runtime_error("Entry at path: " + path.string() + " is not a file.");
   }
@@ -34,7 +34,7 @@ bool MockFileSystemAdaptor::pathExists(const std::filesystem::path &path) {
 }
 
 bool MockFileSystemAdaptor::isFile(const std::filesystem::path& path) {
-  auto& entry = fsMap[path];
+  auto& entry = fsMap[path].first;
   if (!std::holds_alternative<File>(entry)) {
     return false;
   }
@@ -42,7 +42,7 @@ bool MockFileSystemAdaptor::isFile(const std::filesystem::path& path) {
 }
 
 std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::filesystem::path &path) {
-  auto& entry = fsMap[path];
+  auto& entry = fsMap[path].first;
   if (std::holds_alternative<Directory>(entry)) {
     return std::get<Directory>(entry);
   }
@@ -52,11 +52,11 @@ std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::
 void MockFileSystemAdaptor::addEntry(const std::filesystem::path &path,
    const DirectoryOrFile entry) {
   if (pathExists(path.parent_path())) {
-    auto& parentEntry = fsMap[path.parent_path()];
+    auto& parentEntry = fsMap[path.parent_path()].first;
     if (std::holds_alternative<Directory>(parentEntry)) {
       Directory& parentDirectory = std::get<Directory>(parentEntry);
       parentDirectory.push_back(path);
-      fsMap[path] = entry;
+      fsMap[path] = {entry, {}};
     }
   }
 }

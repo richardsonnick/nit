@@ -8,7 +8,7 @@ namespace nit::test {
 class MockFileSystemAdaptor : public FileSystemAdaptorInterface {
 public:
     // In-memory mapping of path string -> child Path or Blob
-    std::unordered_map<std::filesystem::path, DirectoryOrFile> fsMap;
+    std::unordered_map<std::filesystem::path, std::pair<DirectoryOrFile, FileMetadata>> fsMap;
 
     void writeBlobToFile(const std::filesystem::path& path, const std::vector<uint8_t>& blob) override;
     File fromPath(const std::filesystem::path& path) override;
