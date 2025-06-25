@@ -9,6 +9,12 @@ std::pair<std::string, std::string> decomposeHash(const std::string hash) {
     return std::make_pair(prefix, suffix);
 }
 
+std::array<uint32_t, 5> hashObjectRaw(const std::vector<uint8_t>& obj) {
+    std::string data(reinterpret_cast<const char*>(obj.data()), obj.size());
+    std::istringstream iss(data);
+    return hash::sha1::hash_stream_raw(iss);
+}
+
 std::string hashObject(const std::vector<uint8_t>& obj) {
     std::string data(reinterpret_cast<const char*>(obj.data()), obj.size());
     std::istringstream iss(data);
