@@ -58,6 +58,7 @@ private:
     std::vector<IndexEntry> entries;
 
     IndexEntry fromPath(const std::filesystem::path& path);
+    void sortEntries();
 };
 
 } // namespace nit

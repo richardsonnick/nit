@@ -1,6 +1,7 @@
 #include <Index.h>
 #include <hash-object.h>
 #include <unordered_map>
+#include <algorithm>
 
 namespace nit {
 
@@ -41,13 +42,20 @@ void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry
 
 }
 
+void Index::sortEntries() {
+    std::sort(entries.begin(), entries.end(), [](const IndexEntry& a, const IndexEntry& b){
+        return a.metadata.pathName < b.metadata.pathName;
+    });
+}
+
 std::vector<uint8_t> Index::serialize() {
+    sortEntries();
     std::vector<uint8_t> serialization;
     // bit pack header
     uint8_t dircache = 0x00; // TODO make this frfr
     uint8_t version = 0x01; // Using my own versioning. git's current index version is 0x02 (i think)
     uint8_t numEntries = entries.size();
-    uint16_t header = ((uint16_t) dircache << 8) ^ ((uint16_t) version << 4) ^ ((uint16_t) numEntries);
+    uint16_t header = ((uint16_t) dircache << 8) | ((uint16_t) version << 4) | ((uint16_t) numEntries);
     serialization.push_back((uint8_t) (header >> 8));
     serialization.push_back((uint8_t) (header & 0xFF));
 
@@ -55,12 +63,69 @@ std::vector<uint8_t> Index::serialize() {
         appendSerializedEntry(serialization, entry);
     }
 
-
     return serialization;
 }
 
-Index deserialize(std::vector<uint8_t> blob) {
-    return {};
+IndexEntry deserializeEntry(const std::vector<uint8_t>& blob, size_t& cursor) {
+    IndexEntry entry{};
+    size_t entryStart = cursor;
+
+    auto read32 = [&blob, &cursor] () -> uint32_t {
+        uint32_t value = ((uint32_t)blob[cursor] << 24) |
+                          ((uint32_t)blob[cursor+1] << 16) |
+                          ((uint32_t)blob[cursor+2] << 8)  |
+                          ((uint32_t)blob[cursor+3]);
+        cursor += 4;
+        return value;
+    };
+
+    entry.metadata.ctime = read32();
+    entry.metadata.mtime = read32();
+    entry.metadata.deviceID = read32();
+    entry.metadata.inode = read32();
+    entry.metadata.fileMode = read32();
+    entry.metadata.userId = read32();
+    entry.metadata.groupId = read32();
+    entry.metadata.fileSize = read32();
+
+    // Read sha1 hash
+    for (size_t i = 0; i < utils::SHA1_HASH_SIZE / 4; i++) {
+        entry.hash[i] = read32();
+    }
+
+    entry.flags = ((uint16_t)blob[cursor] << 8) | ((uint16_t)blob[cursor+1]);
+    cursor += 2;
+
+    std::string pathname;
+    while (cursor < blob.size() && blob[cursor] != 0) {
+        pathname += static_cast<char>(blob[cursor++]);
+    }
+    cursor++; // Skip null terminator
+    entry.metadata.pathName = pathname;
+
+
+    size_t entryLen = cursor - entryStart;
+    size_t paddingLen = (8 - (entryLen % 8)) % 8;
+    cursor += paddingLen;
+
+    return entry;
+}
+
+Index Index::deserialize(std::vector<uint8_t> blob) {
+    Index index{};
+    size_t cursor = 0;
+    uint16_t header = (((uint16_t) blob[cursor++]) << 8) | ((uint16_t) blob[cursor++]);
+    uint8_t dircache = (header >> 8) & 0xFF;
+    uint8_t indexVersion = (header >> 4) & 0x0F;
+    uint8_t entriesSize = ((uint8_t) header & 0x0F);
+    index.entries.reserve(entriesSize);
+
+    for (size_t i = 0; i < entriesSize; i++) {
+        IndexEntry entry = deserializeEntry(blob, cursor);
+        index.entries.push_back(entry);
+    }
+
+    return index;
 }
 
 IndexEntry Index::fromPath(const std::filesystem::path& path) {
