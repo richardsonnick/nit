@@ -30,6 +30,7 @@ File MockFileSystemAdaptor::fromPath(const std::filesystem::path &path) {
   return std::get<File>(entry);
 }
 
+// TODO: This is stupid. Fix.
 void MockFileSystemAdaptor::createDirectory(const std::filesystem::path &path) {
   if (!pathExists(path)) {
     fsMap[path] = {};
