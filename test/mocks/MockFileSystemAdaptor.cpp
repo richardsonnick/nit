@@ -12,7 +12,7 @@ void MockFileSystemAdaptor::writeBlobToFile(const std::filesystem::path &path,
   addEntry(fb.path, fb);
 }
 
-FileSystemAdaptorImpl::File MockFileSystemAdaptor::fromPath(const std::filesystem::path &path) {
+File MockFileSystemAdaptor::fromPath(const std::filesystem::path &path) {
   if (fsMap.find(path) == fsMap.end()) {
     throw std::runtime_error("No File found for path: " + path.string());
   }

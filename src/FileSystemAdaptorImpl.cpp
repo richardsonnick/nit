@@ -3,6 +3,8 @@
 
 #include <FileSystemAdaptor.h>
 
+namespace nit {
+
 void FileSystemAdaptorImpl::writeBlobToFile(const std::filesystem::path& path, const std::vector<uint8_t>& blob) {
     std::ofstream out(path, std::ios::binary);
     if (!out) {
@@ -11,7 +13,7 @@ void FileSystemAdaptorImpl::writeBlobToFile(const std::filesystem::path& path, c
     out.write(reinterpret_cast<const char*>(blob.data()), blob.size());
 }
 
-FileSystemAdaptorImpl::File FileSystemAdaptorImpl::fromPath(const std::filesystem::path& path) {
+File FileSystemAdaptorImpl::fromPath(const std::filesystem::path& path) {
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         throw std::runtime_error("Failed to open file for read: " + path.string());
@@ -49,3 +51,5 @@ std::vector<std::filesystem::path> FileSystemAdaptorImpl::getEntries(const std::
 void FileSystemAdaptorImpl::addEntry(const std::filesystem::path& path, const DirectoryOrFile entry) {
   throw std::runtime_error("Not implemented");
 }
+
+} // namespace nit

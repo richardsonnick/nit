@@ -9,13 +9,28 @@
 
 #pragma once
 
+namespace nit {
+
+struct File {
+    std::filesystem::path path;
+    std::vector<uint8_t> blob;
+};
+
+struct FileMetadata {
+    uint32_t ctime;
+    uint32_t mtime;
+    uint32_t deviceID;
+    uint32_t inode;
+    uint32_t fileMode;
+    uint32_t userId;
+    uint32_t groupId;
+    uint32_t fileSize;
+    uint16_t flags;
+    std::string pathName;
+};
+
 class FileSystemAdaptorInterface {
     public:
-
-    struct File {
-        std::filesystem::path path;
-        std::vector<uint8_t> blob;
-    };
 
     using Directory = std::vector<std::filesystem::path>;
 
@@ -53,3 +68,5 @@ class FileSystemAdaptorImpl : public FileSystemAdaptorInterface {
     std::vector<std::filesystem::path> getEntries(const std::filesystem::path& path) override;
     void addEntry(const std::filesystem::path& path, const DirectoryOrFile entry) override;
 };
+
+} //namespace nit
