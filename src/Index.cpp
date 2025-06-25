@@ -11,6 +11,8 @@ void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry
         serialization.push_back((uint8_t) (data >> 8));
         serialization.push_back((uint8_t) (data & 0xFF));
     };
+
+    size_t entryStart = serialization.size();
     FileMetadata metadata = entry.metadata;
     pushback32(entry.metadata.ctime);
     pushback32(entry.metadata.mtime);
@@ -29,6 +31,14 @@ void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry
     for (char c : entry.metadata.pathName) {
         serialization.push_back(static_cast<uint8_t>(c));
     }
+    serialization.push_back(0); // pathname null terminator
+
+    size_t entryLen = serialization.size() - entryStart;
+    size_t paddingLen = (8 - (entryLen % 8)) % 8;
+    for (size_t i = 0; i < paddingLen; i++) {
+        serialization.push_back(0);
+    }
+
 }
 
 std::vector<uint8_t> Index::serialize() {
@@ -44,6 +54,7 @@ std::vector<uint8_t> Index::serialize() {
     for (IndexEntry& entry : entries) {
         appendSerializedEntry(serialization, entry);
     }
+
 
     return serialization;
 }
