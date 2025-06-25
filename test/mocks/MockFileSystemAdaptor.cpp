@@ -58,11 +58,13 @@ std::vector<std::filesystem::path> MockFileSystemAdaptor::getEntries(const std::
 
 void MockFileSystemAdaptor::addEntry(const std::filesystem::path &path,
    const DirectoryOrFile entry) {
+  if (!pathExists(path.parent_path())) {
+    utils::ensurePathExists(this, path.parent_path());
+  }
   if (pathExists(path.parent_path())) {
-    auto& parentEntry = fsMap[path.parent_path()].first;
-    if (std::holds_alternative<Directory>(parentEntry)) {
-      Directory& parentDirectory = std::get<Directory>(parentEntry);
-      parentDirectory.push_back(path);
+    auto& parentEntry = fsMap[path.parent_path()];
+    if (std::holds_alternative<Directory>(parentEntry.first)) {
+      std::get<Directory>(parentEntry.first).push_back(path);
       fsMap[path] = {entry, {}};
     }
   }
