@@ -12,6 +12,9 @@ constexpr std::string FILEMODE = "100644";
 struct TreeEntry {
     std::string name;
     std::string mode;  // DIRMODE or FILEMODE. TODO maybe make this an enum?
+    // TODO I am storing the hash as a raw byte repr in the Index and converting to hex when needed.
+    //      It would prob be best to make this hash repr the same. (space savings)
+    //      (raw repr == 20 bytes vs hex repr == 40 bytes)
     std::string hash; // blob hash for files and tree hash for directories
 };
 
