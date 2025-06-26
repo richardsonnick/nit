@@ -43,7 +43,7 @@ TEST_F(IndexTest, TestSerializeDeserialize) {
     ASSERT_TRUE(gotIndex.getRootTree() != nullptr);
 
     /** 
-     * This is not true. The once we read the deserialized tree from the object store
+     * This is not true. When we read the deserialized tree from the object store
      * the rootTree will not have a hash of it's own since we do not record the hash
      * of the base tree in the serialization. 
      */ 
