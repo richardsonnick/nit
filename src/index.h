@@ -5,6 +5,7 @@
 #include <Commit.h>
 #include <Utils.h>
 #include <optional>
+#include <ObjectStore.h>
 
 #pragma once
 
@@ -22,18 +23,22 @@ struct IndexEntry {
 class Index {
 public:
     Index() = default;
-    Index(const std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& baseRepoPath) :  fsa(fsa), baseRepoPath(baseRepoPath) {}
+    Index(const std::shared_ptr<FileSystemAdaptorInterface> fsa, 
+        const std::shared_ptr<ObjectStore> objectStore,
+        const std::filesystem::path& baseRepoPath) :  fsa(fsa), objectStore(objectStore), baseRepoPath(baseRepoPath) {}
 
-    // TODO: returns the deserialized Index from path.
-    static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
-        File file = fsa->fromPath(path);
-        return deserialize(file.blob);
-    }
+    // // TODO: returns the deserialized Index from path.
+    // static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
+    //     File file = fsa->fromPath(path);
+    //     return deserialize(file.blob);
+    // }
 
 
     // TODO: https://mincong.io/2018/04/28/git-index/
     std::vector<uint8_t> serialize();
-    static Index deserialize(std::vector<uint8_t>);
+    // TODO: I should find a way to remove the objectStore dependency here...
+    //  Currently it is needed to retrieve the "rootTree" for the index.
+    static Index deserialize(std::vector<uint8_t> blob, std::shared_ptr<ObjectStore> objectStore);
 
     /**
      * Recursively finds files in `baseRepoPath` and adds them to the index.
@@ -47,16 +52,16 @@ public:
      */
     Commit fromIndexTree() const;
 
+    void setObjectStore(std::shared_ptr<ObjectStore> objStore);
     const std::filesystem::path& getRepoPath() const;
     const std::vector<IndexEntry>& getEntries() const;
-    const std::vector<Tree>& getTrees() const;
     const std::unique_ptr<Tree>& getRootTree() const;
 
 private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
+    std::shared_ptr<ObjectStore> objectStore;
     std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
     std::unique_ptr<Tree> rootTree;
-    std::vector<Tree> indexTrees;
     std::vector<IndexEntry> entries;
 
     std::optional<Tree> findTree(const std::array<uint32_t, 5>& hash);

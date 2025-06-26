@@ -3,18 +3,15 @@
 
 #include <Index.h>
 #include <hash-object.h>
-#include <ObjectStore.h>
 
 namespace nit {
 
-// TODO: This should look in the object store not Index's trees
 std::optional<Tree> Index::findTree(const std::array<uint32_t, 5>& hash) {
-    for (Tree t : indexTrees) {
-        if (t.getHash() == hash) {
-            return t;
-        }
+    if (objectStore == nullptr) {
+        throw new std::runtime_error("No objectStore set.");
     }
-    return std::nullopt;
+    std::string hexHash = utils::rawHashToHex(hash);
+    return Tree::deserialize(objectStore->getObject(hexHash));
 }
 
 void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry& entry) {
@@ -135,8 +132,9 @@ IndexEntry deserializeEntry(const std::vector<uint8_t>& blob, size_t& cursor) {
     return entry;
 }
 
-Index Index::deserialize(std::vector<uint8_t> blob) {
+Index Index::deserialize(std::vector<uint8_t> blob, std::shared_ptr<ObjectStore> objStore) {
     Index index{};
+    index.setObjectStore(objStore);
     size_t cursor = 0;
     uint16_t header = (((uint16_t) blob[cursor++]) << 8) | ((uint16_t) blob[cursor++]);
     uint8_t dircache = (header >> 8) & 0xFF;
@@ -161,7 +159,7 @@ Index Index::deserialize(std::vector<uint8_t> blob) {
         index.entries.push_back(entry);
     }
 
-    auto t = index.findTree(rootTreeHash);
+    std::optional<Tree> t = index.findTree(rootTreeHash);
     if (!t.has_value()) {
         throw new std::runtime_error("Incomplete index could not be deserialized.");
     }
@@ -222,10 +220,15 @@ void Index::addTrees() {
         }
     });
 
-    indexTrees.reserve(treeMap.size());
     for (auto& [path, tree] : treeMap) {
-        indexTrees.push_back(tree);
+        // TODO: For now we store the staged objects directly in the object store.
+        //   this could lead to excess disk usage.
+        objectStore->putObject(tree.serialize());
     }
+}
+
+void Index::setObjectStore(std::shared_ptr<ObjectStore> objStore) {
+    objectStore = objStore;
 }
 
 /**
@@ -238,10 +241,6 @@ Commit Index::fromIndexTree() const {
 
 const std::filesystem::path& Index::getRepoPath() const {
     return baseRepoPath;
-}
-
-const std::vector<Tree>& Index::getTrees() const {
-    return indexTrees;
 }
 
 const std::unique_ptr<Tree>& Index::getRootTree() const {

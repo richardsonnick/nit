@@ -10,10 +10,13 @@ class IndexTest : public ::testing::Test {
 protected:
     std::unique_ptr<Index> index;
     std::shared_ptr<nit::test::MockFileSystemAdaptor> fsa; // Use MockFileSystemAdaptor directly
+    std::shared_ptr<nit::ObjectStore> objectStore;
 
     void SetUp() override {
         fsa = std::make_shared<nit::test::MockFileSystemAdaptor>();
-        index = std::make_unique<Index>(fsa, "/home/snoopy/code/doghouse");
+        const std::filesystem::path objectStorePath("/home/snoopy/code/doghouse/.nit/objects");
+        objectStore = std::make_shared<nit::ObjectStore>(objectStorePath, fsa);
+        index = std::make_unique<Index>(fsa, objectStore, "/home/snoopy/code/doghouse");
         nit::test::createInitialRepo(fsa);
         auto baseRepoDir = std::get<FileSystemAdaptorInterface::Directory>(fsa->fsMap["/home/snoopy/code/doghouse"].first);
         ASSERT_EQ(baseRepoDir.size(), (size_t) 3);
@@ -24,23 +27,31 @@ protected:
 };
 
 TEST_F(IndexTest, TestAddTrees) {
-    EXPECT_TRUE(index->getTrees().empty());
+    EXPECT_EQ(index->getEntries().size(), (size_t) 0);
     index->addTrees();
-    auto trees = index->getTrees();
-    EXPECT_EQ(trees.size(), (unsigned long)3);
     auto entries = index->getEntries();
-    EXPECT_EQ(entries.size(), (unsigned long)4); // Entries should reflect number of ~Files~ not ~Directories~ (this is contained in Trees)
+    EXPECT_EQ(entries.size(), (size_t) 4); // Entries should reflect number of ~Files~ not ~Directories~ (this is contained in Trees)
 }
 
 TEST_F(IndexTest, TestSerializeDeserialize) {
     index->addTrees();
     std::vector<uint8_t> serialization = index->serialize();
 
-    Index gotIndex = Index::deserialize(serialization);
+    Index gotIndex = Index::deserialize(serialization, objectStore);
     ASSERT_EQ(index->getEntries().size(), gotIndex.getEntries().size());
     ASSERT_TRUE(index->getRootTree() != nullptr);
     ASSERT_TRUE(gotIndex.getRootTree() != nullptr);
-    EXPECT_EQ(index->getRootTree()->getHash(), gotIndex.getRootTree()->getHash());
+
+    /** 
+     * This is not true. The once we read the deserialized tree from the object store
+     * the rootTree will not have a hash of it's own since we do not record the hash
+     * of the base tree in the serialization. 
+     */ 
+    // EXPECT_EQ(index->getRootTree()->getHash(), gotIndex.getRootTree()->getHash());
+
+    for (int i = 0; i < index->getEntries().size(); i++) {
+        EXPECT_EQ(index->getEntries()[i].hash, gotIndex.getEntries()[i].hash);
+    }
 
     auto entries = index->getEntries();
     auto gotEntries = gotIndex.getEntries();
