@@ -21,12 +21,12 @@ std::string committerToString(const Committer& c);
 class Commit {
 public:
     Commit() = default;
-    Commit(std::string treeHash) : treeHash(treeHash) {} ;
-    Commit(std::string treeHash, std::string parentHash, std::string author,
-        Committer committer, std::string commitMessage, std::string hash) :
+    Commit(std::array<uint32_t, 5> treeHash) : treeHash(treeHash) {} ;
+    Commit(std::array<uint32_t, 5> treeHash, std::array<uint32_t, 5> parentHash, std::string author,
+        Committer committer, std::string commitMessage, std::array<uint32_t, 5> hash) :
             treeHash(treeHash), parentHash(parentHash), author(author), committer(committer),
             commitMessage(commitMessage), hash(hash) {};
-    Commit(std::string treeHash, std::string parentHash, std::string author,
+    Commit(std::array<uint32_t, 5> treeHash, std::array<uint32_t, 5> parentHash, std::string author,
         Committer committer, std::string commitMessage) :
             treeHash(treeHash), parentHash(parentHash), author(author), committer(committer),
             commitMessage(commitMessage) {
@@ -63,18 +63,18 @@ public:
     void updateHash();
     void addParent(Commit& parent);
 
-    std::string getHash() const;
+    std::array<uint32_t, 5> getHash() const;
     std::string getAuthor() const;
-    std::string getParentHash() const;
-    std::string getTreeHash() const;
+    std::array<uint32_t, 5> getParentHash() const;
+    std::array<uint32_t, 5> getTreeHash() const;
 
 private:
-    std::string treeHash;
-    std::string parentHash; // TODO For merges this could be one or more. I'm not supporting that yet.
+    std::array<uint32_t, 5> treeHash;
+    std::array<uint32_t, 5> parentHash; // TODO For merges this could be one or more. I'm not supporting that yet.
     std::string author;
     Committer committer;
     std::string commitMessage;
-    std::string hash;
+    std::array<uint32_t, 5> hash;
 };
 
 }

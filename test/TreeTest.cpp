@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <Tree.h>
+#include <Utils.h>
 
 using namespace nit;
 
@@ -19,21 +20,21 @@ TEST_F(TreeTest, TestAddEntryAndHashChange) {
     EXPECT_TRUE(tree->getEntries().empty());
     auto initialHash = tree->getHash();
 
-    TreeEntry fileEntry{ "file1.txt", FILEMODE, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
+    TreeEntry fileEntry{ "file1.txt", FILEMODE, utils::hexToRawHash("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") };
     tree->addEntry(fileEntry);
     ASSERT_EQ(tree->getEntries().size(), (unsigned long)1);
     EXPECT_NE(tree->getHash(), initialHash);
 
     auto hashAfterFirstAdd = tree->getHash();
-    TreeEntry dirEntry{ "subdir", DIRMODE, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" };
+    TreeEntry dirEntry{ "subdir", DIRMODE, utils::hexToRawHash("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") };
     tree->addEntry(dirEntry);
     EXPECT_EQ(tree->getEntries().size(), (unsigned long)2);
     EXPECT_NE(tree->getHash(), hashAfterFirstAdd);
 }
 
 TEST_F(TreeTest, TestSerializeDeserialize) {
-    TreeEntry fileEntry{ "file1.txt", FILEMODE, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
-    TreeEntry dirEntry{ "subdir", DIRMODE, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" };
+    TreeEntry fileEntry{ "file1.txt", FILEMODE, utils::hexToRawHash("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") };
+    TreeEntry dirEntry{ "subdir", DIRMODE, utils::hexToRawHash("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") };
     tree->addEntry(fileEntry);
     tree->addEntry(dirEntry);
 

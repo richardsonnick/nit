@@ -1,9 +1,21 @@
-#include <Index.h>
-#include <hash-object.h>
 #include <unordered_map>
 #include <algorithm>
 
+#include <Index.h>
+#include <hash-object.h>
+#include <ObjectStore.h>
+
 namespace nit {
+
+// TODO: This should look in the object store not Index's trees
+std::optional<Tree> Index::findTree(const std::array<uint32_t, 5>& hash) {
+    for (Tree t : indexTrees) {
+        if (t.getHash() == hash) {
+            return t;
+        }
+    }
+    return std::nullopt;
+}
 
 void appendSerializedEntry(std::vector<uint8_t>& serialization, const IndexEntry& entry) {
     auto pushback32 = [&serialization](const uint32_t data){
@@ -58,6 +70,18 @@ std::vector<uint8_t> Index::serialize() {
     uint16_t header = ((uint16_t) dircache << 8) | ((uint16_t) version << 4) | ((uint16_t) numEntries);
     serialization.push_back((uint8_t) (header >> 8));
     serialization.push_back((uint8_t) (header & 0xFF));
+
+    if (!rootTree) {
+        throw new std::runtime_error("Cannot serialize incomplete Index.");
+    }
+
+    // TODO: Really need to put this routine somewhere.
+    for (const auto& hashWord : rootTree->getHash()) {
+        serialization.push_back(static_cast<uint8_t>(hashWord & 0xFF));
+        serialization.push_back(static_cast<uint8_t>((hashWord >> 8) & 0xFF));
+        serialization.push_back(static_cast<uint8_t>((hashWord >> 16) & 0xFF));
+        serialization.push_back(static_cast<uint8_t>((hashWord >> 24) & 0xFF));
+    }
 
     for (IndexEntry& entry : entries) {
         appendSerializedEntry(serialization, entry);
@@ -120,11 +144,28 @@ Index Index::deserialize(std::vector<uint8_t> blob) {
     uint8_t entriesSize = ((uint8_t) header & 0x0F);
     index.entries.reserve(entriesSize);
 
+    std::array<uint32_t, 5> rootTreeHash;
+    for (int i = 0; i < 5; i++) {
+        if (cursor + 4 > blob.size()) {
+            throw new std::runtime_error("Insufficient data for hash.");
+        }
+        rootTreeHash[i] = static_cast<uint32_t>(blob[cursor]) |
+            (static_cast<uint32_t>(blob[cursor + 1]) << 8) |
+            (static_cast<uint32_t>(blob[cursor + 2]) << 16) |
+            (static_cast<uint32_t>(blob[cursor + 3]) << 24);
+        cursor += 4;
+    }
+
     for (size_t i = 0; i < entriesSize; i++) {
         IndexEntry entry = deserializeEntry(blob, cursor);
         index.entries.push_back(entry);
     }
 
+    auto t = index.findTree(rootTreeHash);
+    if (!t.has_value()) {
+        throw new std::runtime_error("Incomplete index could not be deserialized.");
+    }
+    index.rootTree = std::make_unique<Tree>(t.value());
     return index;
 }
 
@@ -160,7 +201,7 @@ void Index::addTrees() {
             entry = {
                 relativePath, 
                 mode,
-                hexHash
+                indexEntry.hash
             };
         } else {
             mode = DIRMODE;
@@ -175,7 +216,7 @@ void Index::addTrees() {
             }
         }
         if (path == baseRepoPath) {
-            rootTree = treeMap[path];
+            rootTree = std::make_unique<Tree>(treeMap[path]);
         } else {
             treeMap[path.parent_path()].addEntry(entry);
         }
@@ -192,8 +233,7 @@ void Index::addTrees() {
  * to fill this commit out before "committing".
  */
 Commit Index::fromIndexTree() const {
-    throw new std::runtime_error("Not implemented.");
-    // return Commit::fromTree(indexTree);
+    return Commit::fromTree(*rootTree);
 }
 
 const std::filesystem::path& Index::getRepoPath() const {
@@ -202,6 +242,10 @@ const std::filesystem::path& Index::getRepoPath() const {
 
 const std::vector<Tree>& Index::getTrees() const {
     return indexTrees;
+}
+
+const std::unique_ptr<Tree>& Index::getRootTree() const {
+    return rootTree;
 }
 
 const std::vector<IndexEntry>& Index::getEntries() const {

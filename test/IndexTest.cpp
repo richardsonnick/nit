@@ -38,6 +38,10 @@ TEST_F(IndexTest, TestSerializeDeserialize) {
 
     Index gotIndex = Index::deserialize(serialization);
     ASSERT_EQ(index->getEntries().size(), gotIndex.getEntries().size());
+    ASSERT_TRUE(index->getRootTree() != nullptr);
+    ASSERT_TRUE(gotIndex.getRootTree() != nullptr);
+    EXPECT_EQ(index->getRootTree()->getHash(), gotIndex.getRootTree()->getHash());
+
     auto entries = index->getEntries();
     auto gotEntries = gotIndex.getEntries();
     auto compareEntry = [&](int i) {

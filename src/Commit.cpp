@@ -1,7 +1,6 @@
-#include <sstream>
-
 #include <hash-object.h>
 #include <Commit.h>
+#include <Utils.h>
 
 namespace nit {
 
@@ -21,9 +20,11 @@ Commit Commit::fromTree(const Tree& tree) {
 
 std::string Commit::header(const Commit& c) {
     std::ostringstream header;
-    header << "tree " << c.treeHash << "\n";
+    std::string treeHashHex = utils::rawHashToHex(c.treeHash);
+    std::string parentHashHex = utils::rawHashToHex(c.parentHash);
+    header << "tree " << treeHashHex << "\n";
     if (!c.parentHash.empty()) {
-        header << "parent " << c.parentHash << "\n";
+        header << "parent " << parentHashHex << "\n";
     }
     header << "author " << c.author << "\n";
     header << "committer " << committerToString(c.committer) << "\n";
@@ -70,9 +71,9 @@ Commit Commit::deserialize(const std::vector<uint8_t>& data) {
         std::string line(reinterpret_cast<const char*>(&data[pos]), lineEnd - pos);
 
         if (line.starts_with("tree ")) {
-            commit.treeHash = line.substr(5);
+            commit.treeHash = utils::hexToRawHash(line.substr(5));
         } else if (line.starts_with("parent ")) {
-            commit.parentHash = line.substr(7);
+            commit.parentHash = utils::hexToRawHash(line.substr(7));
         } else if (line.starts_with("author ")) {
             commit.author = line.substr(7);
         } else if (line.starts_with("committer ")) {
@@ -109,7 +110,7 @@ Commit Commit::deserialize(const std::vector<uint8_t>& data) {
 
 void Commit::updateHash() {
     std::vector<uint8_t> serialization = serialize();
-    hash = nit::hashObject(serialization);
+    hash = nit::hashObjectRaw(serialization);
 }
 
 void Commit::addParent(Commit& parent) {
@@ -119,7 +120,7 @@ void Commit::addParent(Commit& parent) {
     updateHash();
 }
 
-std::string Commit::getHash() const {
+std::array<uint32_t, 5> Commit::getHash() const {
     return hash;
 }
 
@@ -127,11 +128,11 @@ std::string Commit::getAuthor() const {
     return author;
 }
 
-std::string Commit::getParentHash() const {
+std::array<uint32_t, 5> Commit::getParentHash() const {
     return parentHash;
 }
 
-std::string Commit::getTreeHash() const {
+std::array<uint32_t, 5> Commit::getTreeHash() const {
     return treeHash;
 }
 

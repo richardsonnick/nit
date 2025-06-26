@@ -4,6 +4,7 @@
 #include <Tree.h>
 #include <Commit.h>
 #include <Utils.h>
+#include <optional>
 
 #pragma once
 
@@ -49,14 +50,16 @@ public:
     const std::filesystem::path& getRepoPath() const;
     const std::vector<IndexEntry>& getEntries() const;
     const std::vector<Tree>& getTrees() const;
+    const std::unique_ptr<Tree>& getRootTree() const;
 
 private:
     const std::shared_ptr<FileSystemAdaptorInterface> fsa;
     std::filesystem::path baseRepoPath; // The parent directory that contains `.nit`.
-    Tree rootTree;
+    std::unique_ptr<Tree> rootTree;
     std::vector<Tree> indexTrees;
     std::vector<IndexEntry> entries;
 
+    std::optional<Tree> findTree(const std::array<uint32_t, 5>& hash);
     IndexEntry fromPath(const std::filesystem::path& path);
     void sortEntries();
 };

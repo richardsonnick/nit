@@ -1,5 +1,4 @@
 #include <vector>
-
 #include <types.h>
 
 #pragma once
@@ -15,7 +14,7 @@ struct TreeEntry {
     // TODO I am storing the hash as a raw byte repr in the Index and converting to hex when needed.
     //      It would prob be best to make this hash repr the same. (space savings)
     //      (raw repr == 20 bytes vs hex repr == 40 bytes)
-    std::string hash; // blob hash for files and tree hash for directories
+    std::array<uint32_t, 5> hash; // blob hash for files and tree hash for directories
 };
 
 /** 
@@ -31,11 +30,11 @@ public:
     void updateHash();
     static Tree deserialize(const std::vector<uint8_t>& data);
     const std::vector<TreeEntry>& getEntries() const;
-    const std::string& getHash() const;
+    const std::array<uint32_t, 5>& getHash() const;
 
 private:
     std::vector<TreeEntry> entries;
-    std::string hash;
+    std::array<uint32_t, 5> hash{}; // 5 * 4 bytes = 20 bytes (SHA-1)
 };
 
 }
