@@ -10,7 +10,7 @@ inline constexpr uint8_t SHA1_HASH_SIZE = 20;
 
 inline std::string rawHashToHex(const std::array<uint32_t, 5>& buf) {
     std::ostringstream oss;
-    oss << std::hex << std::uppercase;
+    oss << std::hex;
 
     for (const auto& value : buf) {
         oss << std::setfill('0') << std::setw(8) << value;
