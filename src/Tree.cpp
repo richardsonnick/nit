@@ -61,7 +61,6 @@ Tree Tree::deserialize(const std::vector<uint8_t>& data) {
                 (static_cast<uint32_t>(data[pos + 3]) << 24);
             pos += 4;
         }
-        // pos += 40;
 
         tree.entries.push_back({mode, name, hash});
     }
