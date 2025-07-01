@@ -49,7 +49,7 @@ TEST_F(IndexTest, TestSerializeDeserialize) {
      */ 
     // EXPECT_EQ(index->getRootTree()->getHash(), gotIndex.getRootTree()->getHash());
 
-    for (int i = 0; i < index->getEntries().size(); i++) {
+    for (size_t i = 0; i < index->getEntries().size(); i++) {
         EXPECT_EQ(index->getEntries()[i].hash, gotIndex.getEntries()[i].hash);
     }
 

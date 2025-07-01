@@ -27,13 +27,6 @@ public:
         const std::shared_ptr<ObjectStore> objectStore,
         const std::filesystem::path& baseRepoPath) :  fsa(fsa), objectStore(objectStore), baseRepoPath(baseRepoPath) {}
 
-    // // TODO: returns the deserialized Index from path.
-    // static Index fromIndexObject(std::shared_ptr<FileSystemAdaptorInterface> fsa, const std::filesystem::path& path) {
-    //     File file = fsa->fromPath(path);
-    //     return deserialize(file.blob);
-    // }
-
-
     // TODO: https://mincong.io/2018/04/28/git-index/
     std::vector<uint8_t> serialize();
     // TODO: I should find a way to remove the objectStore dependency here...
