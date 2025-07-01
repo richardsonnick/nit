@@ -25,6 +25,7 @@ target_sources(nitlib INTERFACE
   src/FileSystemAdaptor.h
   src/types.h
   src/Utils.h
+  src/CLI.h
   src/hash-object.cpp
   src/FileSystemAdaptorImpl.cpp
   src/Commit.cpp
@@ -34,7 +35,7 @@ target_sources(nitlib INTERFACE
 )
 
 ## EXECUTABLE SETUP
-add_executable(nit src/main.cpp src/hash-object.cpp)
+add_executable(nit src/main.cpp src/hash-object.cpp src/CLI.cpp)
 target_link_libraries(nit PRIVATE nitlib)
 target_compile_options(nit PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(nit PRIVATE boogielib)
