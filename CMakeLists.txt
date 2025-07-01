@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-point
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
 set(CTEST_OUTPUT_ON_FAILURE ON)
+set(CMAKE_INSTALL_RPATH "/usr/local/lib")
 
 find_package(boogielib REQUIRED PATHS /usr/local/lib/boogielib)
 
@@ -85,3 +86,12 @@ target_link_libraries(nit_tests
 
 include(GoogleTest)
 gtest_discover_tests(nit_tests)
+
+install (TARGETS nit
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY src/
+  DESTINATION include/nit
+  FILES_MATCHING PATTERN "*.h"
+)
